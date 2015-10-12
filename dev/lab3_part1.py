@@ -11,10 +11,18 @@ while True:
     users[user_id] = SHA256.new(str.encode(input('password: '))).hexdigest()
     user_count += 1
 
+<<<<<<< HEAD
+<<<<<<< HEAD
+#comment_Matt
+=======
+#hahah
+=======
 
 #Scott needs to learn how to use gitHub
 
+>>>>>>> 0ec73ef5446257f55f52b5b5cf5e707dc035ee21
 #comment lol
+>>>>>>> 27e18e23105347e1d397ff98f768fafd4f89922f
 
 # rofl lmao
 
