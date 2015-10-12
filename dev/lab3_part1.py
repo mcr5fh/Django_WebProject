@@ -11,6 +11,8 @@ while True:
     users[user_id] = SHA256.new(str.encode(input('password: '))).hexdigest()
     user_count += 1
 
+#comment
+
 while True:
     user_id = input('username: ')
     if user_id not in users:
