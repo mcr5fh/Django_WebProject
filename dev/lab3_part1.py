@@ -1,6 +1,7 @@
 from Crypto.Hash import SHA256
 
 # random comment
+# lol
 
 users = {}
 user_count = 0
