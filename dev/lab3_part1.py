@@ -11,7 +11,11 @@ while True:
     users[user_id] = SHA256.new(str.encode(input('password: '))).hexdigest()
     user_count += 1
 
+
 #Scott needs to learn how to use gitHub
+
+#comment lol
+
 
 while True:
     user_id = input('username: ')
