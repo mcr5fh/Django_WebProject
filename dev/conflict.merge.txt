@@ -7,8 +7,11 @@ msg = input('message: ')
 des = DES.new(key, DES.MODE_ECB)
 encrypted = des.encrypt(msg)
 
+<<<<<<< HEAD
 #print(encrypted) #what even
+=======
 #print(encrypted) rekt
+>>>>>>> carters-branch
 
 encrypted_file = open('secret.txt', '+w')
 json.dump(encrypted.decode('latin-1'), encrypted_file)
