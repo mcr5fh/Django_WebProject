@@ -1,8 +1,11 @@
 # -*- coding: utf-8 -*-
+import os
+from datetime import datetime
 from django.shortcuts import render_to_response
 from django.template import RequestContext
 from django.http import HttpResponseRedirect
 from django.core.urlresolvers import reverse
+from django.shortcuts import get_object_or_404
 
 from myproject.myapp.models import Document
 from myproject.myapp.forms import DocumentForm
@@ -29,3 +32,20 @@ def list(request):
         {'documents': documents, 'form': form},
         context_instance=RequestContext(request)
     )
+
+def delete(request):
+    if request.method != 'POST':
+        raise HTTP404
+
+    docId = request.POST.get('docfile', None)
+    docToDel = get_object_or_404(Document, pk = docId)
+    docToDel.docfile.delete()
+    docToDel.delete()
+
+    return HttpResponseRedirect(reverse('myproject.myapp.views.list'))
+
+def makedir(request):
+    dirname = datetime.now().strftime('%Y.%m.%d.%H.%M.%S') #2010.08.09.12.08.45
+    os.mkdir(os.path.join('/documents', dirname))
+
+    return HttpResponseRedirect(reverse('myproject.myapp.views.list'))
