@@ -1,7 +1,8 @@
-from django.conf.urls import include, url
+from django.conf.urls import include, url, patterns
 from django.conf import settings
 from django.conf.urls.static import static
 from django.views.generic import RedirectView
+from myproject.myapp import views
 
 from django.contrib import admin
 
