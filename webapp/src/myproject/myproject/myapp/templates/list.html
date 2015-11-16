@@ -7,43 +7,26 @@
 
 	<body>
 		<!-- List of uploaded documents -->
-		{% if documents %}
+		{% if reports %}
 			<ul>
-			{% for document in documents %}
-				<li><a href="{{ document.docfile.url }}">{{ document.docfile.name }}</a>
-
-                 <form action="{% url "delete" %}" method="post" enctype="multipart/form-data">
+			{% for report in reports %}
+                <p>{{ report.timestamp }}</p>
+                <p>{{ report.short }}</p>
+                <p>{{ report.detailed }}</p>
+                {%  if report.file %}
+				    <li><a href="{{ report.file.url }}">{{ report.file.name }}</a></li>
+                {% endif %}
+                <form action="{% url "delete" %}" method="post" enctype="multipart/form-data">
                     {% csrf_token %}
-                    <input type="hidden" name="docfile" value="{{ document.pk }}" />
+                     <a class="btn btn-default" href="{% url 'report_edit' pk=report.pk %}" role="button">Edit</a>
+                     <input type="hidden" name="report" value="{{ report.pk }}" />
                      <input type="submit" value="Delete" />
                 </form>
-
-                </li>
 			{% endfor %}
 			</ul>
 		{% else %}
-			<p>No documents.</p>
+			<p>No Reports.</p>
 		{% endif %}
-
-		<!-- Upload form. Note enctype attribute! -->
-		<form action="{% url "list" %}" method="post" enctype="multipart/form-data">
-			{% csrf_token %}
-			<p>{{ form.non_field_errors }}</p>
-			<p>{{ form.docfile.label_tag }} {{ form.docfile.help_text }}</p>
-			<p>
-				{{ form.docfile.errors }}
-				{{ form.docfile }}
-			</p>
-			<p><input type="submit" value="Upload" /></p>
-		</form>
-
-        <!-- Create a folder
-        <form action="(% url "makedir" %)" method ="post" enctype="multipart/form-data">
-        (% csrf_token %)
-        <p><input type="submit" value="Make Directory" /></p>
-        -->
-        <!-- Manage reports -->
-		
 	</body>
 
 </html> 
