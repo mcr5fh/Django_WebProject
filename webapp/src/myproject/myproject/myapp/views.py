@@ -8,9 +8,6 @@ from django.http import HttpResponseRedirect
 from django.core.urlresolvers import reverse
 from django.shortcuts import get_object_or_404
 
-
-#from myproject.myapp.models import Document
-from myproject.myapp.forms import DocumentForm
 from myproject.myapp.forms import UserForm
 from myproject.myapp.models import Report
 from myproject.myapp.forms import ReportForm
@@ -20,10 +17,11 @@ from django.utils import timezone
 def report_new(request):
     # Handle file upload
     if request.method == 'POST':
-        form = ReportForm(request.POST)
+        form = ReportForm(request.POST, request.FILES)
         if form.is_valid():
             newReport = form.save(commit=False)
             newReport.timestamp = timezone.now()
+            newReport.file = request.FILES['file']
             newReport.save()
 
             # Redirect to the report list after POST
@@ -62,7 +60,7 @@ def delete(request):
 def report_edit(request, pk):
     report = get_object_or_404(Report, pk=pk)
     if request.method == 'POST':
-        form = ReportForm(request.POST, instance=report)
+        form = ReportForm(request.POST, request.FILES, instance=report)
         if form.is_valid():
             report = form.save(commit=False)
             report.timestamp = timezone.now()
