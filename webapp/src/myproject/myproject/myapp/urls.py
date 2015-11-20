@@ -7,6 +7,7 @@ urlpatterns = patterns('myproject.myapp.views',
     url(r'^register/$', 'register', name='register'),
     url(r'^report/$', 'report_new', name ='report'),
     url(r'^report/(?P<pk>[0-9]+)/edit/$', 'report_edit', name='report_edit'),
+    url(r'^login/$', 'auth_login', name ='login'),
 )
 
 

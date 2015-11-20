@@ -6,7 +6,8 @@ from django.contrib.auth.models import User
 class UserForm(forms.ModelForm):
     class Meta:
         model = User
-        fields = ['username','password']
+        fields = ['username','password', 'is_superuser']
+        
 from .models import Report
 
 class ReportForm(forms.ModelForm):
@@ -14,3 +15,5 @@ class ReportForm(forms.ModelForm):
     class Meta:
         model = Report
         fields = ('short','detailed','file',)
+
+
