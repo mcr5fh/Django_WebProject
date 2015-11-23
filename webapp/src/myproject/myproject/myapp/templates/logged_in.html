@@ -2,14 +2,14 @@
 <html lang="en">
   <head>
     <meta charset="utf-8">
-    <title>Register</title>
+    <title>Logged In!</title>
   </head>
   <body>
-    {% if registered %}
-      <p>Thank you for registering</p>
+    {% if logged_in %}
+      <p>You are logged in.</p>
     {% else %}
     <form method="post"> {% csrf_token %}
-        {{ user_form.as_p }}
+        {{ login_form.as_p }}
 
       <input type="submit" value="OK">
     </form>
