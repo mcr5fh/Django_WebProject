@@ -9,23 +9,28 @@ from django.core.urlresolvers import reverse
 from django.shortcuts import get_object_or_404
 from django.contrib.auth import authenticate, login
 
-
-#from myproject.myapp.models import Document
-from myproject.myapp.forms import DocumentForm
 from myproject.myapp.forms import UserForm
 from myproject.myapp.models import Report
 from myproject.myapp.forms import ReportForm
 from django.utils import timezone
 from myproject.myapp.forms import LoginForm
 
+from django.contrib.auth import authenticate, login, logout
+
+# import the logging library
+import logging
+
+# Get an instance of a logger
+logger = logging.getLogger(__name__)
 
 def report_new(request):
     # Handle file upload
     if request.method == 'POST':
-        form = ReportForm(request.POST)
+        form = ReportForm(request.POST, request.FILES)
         if form.is_valid():
             newReport = form.save(commit=False)
             newReport.timestamp = timezone.now()
+            newReport.file = request.FILES['file']
             newReport.save()
 
             # Redirect to the report list after POST
@@ -64,7 +69,7 @@ def delete(request):
 def report_edit(request, pk):
     report = get_object_or_404(Report, pk=pk)
     if request.method == 'POST':
-        form = ReportForm(request.POST, instance=report)
+        form = ReportForm(request.POST, request.FILES, instance=report)
         if form.is_valid():
             report = form.save(commit=False)
             report.timestamp = timezone.now()
@@ -83,6 +88,7 @@ def makedir(request):
     return HttpResponseRedirect(reverse('myproject.myapp.views.list'))
 
 
+#NOTE: if user already exists then it jsut resets
 def register(request):
     context = RequestContext(request)
     #a boolean value for telling the template whether the registration was successful. Set to False originally, code changes to True when registration succeeds.
@@ -118,8 +124,35 @@ def register(request):
 
     return render_to_response('register.html', {'user_form': user_form,'registered': registered}, context)
 
+def auth_login(request):
+    context = RequestContext(request)
+    if request.method == 'POST':
+        #check to see if the post came from the logout in the reports page
+        if 'logout' in request.POST:
+            logout(request)
+            logger.error('Logging out')
+            return render(request, 'login.html')
+
+        username = request.POST['username']
+        password = request.POST['password']
+        user = authenticate(username=username, password=password)
+        if user is not None:
+            login(request, user)
+            logger.error('User Found')
+            # Redirect to the list of their reports.
+            return render(request, 'list.html', {'user_info_dict': request.POST})
 
 
+        else:
+            logger.error('User Not Found')
+            # Return an 'invalid login' error message.
+            return render(request, 'login.html', {'login_failed': True})
+    else:
+        #show the normal user form when theres not a post
+        user_form = UserForm()
+
+
+    return render_to_response('login.html', {'user_form': user_form,'login_failed': False}, context)
 
 
 def login_view(request):

@@ -26,6 +26,13 @@
 			</ul>
 		{% else %}
 			<p>No Reports.</p>
+		</br>
+
+		 <form action="{% url "login" %}" method="post" enctype="multipart/form-data">{% csrf_token %}
+			<input type="hidden" name='logout' value="False" />
+			<input type='submit' value='Logout' />
+
+			</form>
 		{% endif %}
 	</body>
 
