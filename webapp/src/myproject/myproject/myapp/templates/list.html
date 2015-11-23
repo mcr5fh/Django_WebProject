@@ -8,22 +8,37 @@
 	<body>
 		<!-- List of uploaded documents -->
 		{% if reports %}
-			<ul>
+			<table border="1" style="width:100%">
+				<!--<ul> -->
+			<tr>
+				<td>Date Uploaded</td>
+                <td>Report Title</td>
+                <td>Report Description</td>
+                <td>Report File</td>
+                <td>Edit Report</td>
+                <td>Delete Report</td>
+			</tr>
 			{% for report in reports %}
-                <p>{{ report.timestamp }}</p>
-                <p>{{ report.short }}</p>
-                <p>{{ report.detailed }}</p>
+			<tr>
+                <td>{{ report.timestamp }}</td>
+                <td>{{ report.short }}</td>
+                <td>{{ report.detailed }}</td>
                 {%  if report.file %}
-				    <li><a href="{{ report.file.url }}">{{ report.file.name }}</a></li>
+				    <td><a href="{{ report.file.url }}">{{ report.file.name }}</a></td>
                 {% endif %}
+                <td>
                 <form action="{% url "delete" %}" method="post" enctype="multipart/form-data">
                     {% csrf_token %}
                      <a class="btn btn-default" href="{% url 'report_edit' pk=report.pk %}" role="button">Edit</a>
                      <input type="hidden" name="report" value="{{ report.pk }}" />
+                     </td>
+                     <td>
                      <input type="submit" value="Delete" />
+                 </td>
                 </form>
+               </tr>
 			{% endfor %}
-			</ul>
+			</table>
 		{% else %}
 			<p>No Reports.</p>
 		</br>
