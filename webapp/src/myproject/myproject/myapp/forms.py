@@ -15,6 +15,13 @@ class UserForm(forms.ModelForm):
         fields = ['username','password']
 from .models import Report
 
+
+class LoginForm(forms.Form):
+    username = forms.CharField(label = "Username", max_length = 100)
+    password = forms.CharField(label = "Password", max_length = 100, widget = forms.PasswordInput)
+from .models import Report
+
+
 class ReportForm(forms.ModelForm):
 
     class Meta:

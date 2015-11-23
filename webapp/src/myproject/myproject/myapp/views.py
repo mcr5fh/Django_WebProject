@@ -7,6 +7,7 @@ from django.template import RequestContext
 from django.http import HttpResponseRedirect
 from django.core.urlresolvers import reverse
 from django.shortcuts import get_object_or_404
+from django.contrib.auth import authenticate, login
 
 
 #from myproject.myapp.models import Document
@@ -15,6 +16,7 @@ from myproject.myapp.forms import UserForm
 from myproject.myapp.models import Report
 from myproject.myapp.forms import ReportForm
 from django.utils import timezone
+from myproject.myapp.forms import LoginForm
 
 
 def report_new(request):
@@ -90,6 +92,7 @@ def register(request):
         
         user_form = UserForm(data=request.POST)
         
+        
         #validation checking...
         if user_form.is_valid():
             
@@ -119,6 +122,37 @@ def register(request):
 
 
 
+def login_view(request):
+    context = RequestContext(request)
+    logged_in = False
+    
+    
+
+    if request.method == 'POST':
+
+        login_form = LoginForm(data=request.POST)
+
+        if login_form.is_valid():
+
+            username = request.POST['username']
+            password = request.POST['password']
+            user = authenticate(username=username, password=password)
+            
+            if user is not None:
+
+                if user.is_active:
+                    login(request, user)
+                    logged_in = True
+                        # Return to reports page
+                    return render_to_response('report.html', {'login_form': login_form,'logged_in': logged_in}, context)
+                #else:
+                #return 'invalid login error message'
+    
+                    
+    else:
+        login_form = LoginForm()
+    
+    return render_to_response('logged_in.html', {'login_form': login_form,'logged_in': logged_in}, context)
 
 
 
@@ -128,8 +162,3 @@ def register(request):
 
 
 
-
-
-#=======
-#return HttpResponseRedirect(reverse('myproject.myapp.views.list')) '''
-#>>>>>>> 5c30f052c849f3963fe3dd43f112a2ba3bba2d7f
