@@ -39,7 +39,8 @@ INSTALLED_APPS = (
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'myproject.myapp'
+    'myapp',
+    'postman'
 )
 
 MIDDLEWARE_CLASSES = (
@@ -59,7 +60,7 @@ TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
         'DIRS': [
-            os.path.join(BASE_DIR, 'myproject', 'myapp', 'templates')
+            os.path.join(BASE_DIR, 'myproject', 'myapp', 'templates', 'postman')
         ],
         'APP_DIRS': True,
         'OPTIONS': {

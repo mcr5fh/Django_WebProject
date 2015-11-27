@@ -9,11 +9,11 @@ from django.core.urlresolvers import reverse
 from django.shortcuts import get_object_or_404
 from django.contrib.auth import authenticate, login
 
-from myproject.myapp.forms import UserForm
-from myproject.myapp.models import Report
-from myproject.myapp.forms import ReportForm
+from myapp.forms import UserForm
+from myapp.models import Report
+from myapp.forms import ReportForm
 from django.utils import timezone
-from myproject.myapp.forms import LoginForm
+from myapp.forms import LoginForm
 
 from django.contrib.auth import authenticate, login, logout
 
@@ -34,7 +34,7 @@ def report_new(request):
             newReport.save()
 
             # Redirect to the report list after POST
-            return HttpResponseRedirect(reverse('myproject.myapp.views.list'))
+            return HttpResponseRedirect(reverse('myapp.views.list'))
     else:
         form = ReportForm() # A empty, unbound form
     return render(request, 'report.html', {'form': form})
@@ -64,7 +64,7 @@ def delete(request):
         reportToDel.file.delete()
     reportToDel.delete()
 
-    return HttpResponseRedirect(reverse('myproject.myapp.views.list'))
+    return HttpResponseRedirect(reverse('myapp.views.list'))
 
 def report_edit(request, pk):
     report = get_object_or_404(Report, pk=pk)
@@ -76,7 +76,7 @@ def report_edit(request, pk):
             report.save()
 
             # Redirect to the report list after POST
-            return HttpResponseRedirect(reverse('myproject.myapp.views.list'))
+            return HttpResponseRedirect(reverse('myapp.views.list'))
     else:
         form = ReportForm(instance=report) # A empty, unbound form
     return render(request, 'report_edit.html', {'form': form, 'report': report})
@@ -85,7 +85,7 @@ def report_edit(request, pk):
 def makedir(request):
     dirname = datetime.now().strftime('%Y.%m.%d.%H.%M.%S') #2010.08.09.12.08.45
     os.mkdir(os.path.join('/documents', dirname))
-    return HttpResponseRedirect(reverse('myproject.myapp.views.list'))
+    return HttpResponseRedirect(reverse('myapp.views.list'))
 
 
 #NOTE: if user already exists then it jsut resets
@@ -185,7 +185,7 @@ def login_view(request):
     else:
         login_form = LoginForm()
     
-    return render_to_response('logged_in.html', {'login_form': login_form,'logged_in': logged_in}, context)
+    return render_to_response('login.html', {'login_form': login_form,'logged_in': logged_in}, context)
 
 
 
