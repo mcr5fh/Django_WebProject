@@ -1,0 +1,5 @@
+*.pyc
+*.swp
+staticfiles
+mydatabase
+DB_dev_*
