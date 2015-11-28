@@ -23,9 +23,13 @@
                 <td>{{ report.timestamp }}</td>
                 <td>{{ report.short }}</td>
                 <td>{{ report.detailed }}</td>
+                <td>
                 {%  if report.file %}
-				    <td><a href="{{ report.file.url }}">{{ report.file.name }}</a></td>
+				    <a href="{{ report.file.url }}">{{ report.file.name }}</a></td>
+                {% else %}
+                    No file
                 {% endif %}
+                </td>
                 <td>
                 <form action="{% url "delete" %}" method="post" enctype="multipart/form-data">
                     {% csrf_token %}

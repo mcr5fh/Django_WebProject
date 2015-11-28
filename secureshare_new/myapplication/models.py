@@ -10,5 +10,5 @@ class Report(models.Model):
     #detailed description
     detailed = models.TextField()
     #one or more files
-    file = models.FileField(upload_to='documents/%Y/%m/%d', blank=True)
+    file = models.FileField(upload_to='documents/%Y/%m/%d', blank=True, null=True)
     #private/public
