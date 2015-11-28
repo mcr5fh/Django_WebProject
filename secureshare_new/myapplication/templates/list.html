@@ -15,6 +15,7 @@
                 <td>Report Title</td>
                 <td>Report Description</td>
                 <td>Report File</td>
+                <td>Visibility</td>
                 <td>Edit Report</td>
                 <td>Delete Report</td>
 			</tr>
@@ -30,6 +31,7 @@
                     No file
                 {% endif %}
                 </td>
+                <td>{{ report.visibility }}</td>
                 <td>
                 <form action="{% url "delete" %}" method="post" enctype="multipart/form-data">
                     {% csrf_token %}

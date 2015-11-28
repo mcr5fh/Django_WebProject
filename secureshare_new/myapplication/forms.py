@@ -2,6 +2,8 @@
 
 from django import forms
 from django.contrib.auth.models import User
+from django.forms.widgets import RadioSelect
+
 
 class UserForm(forms.ModelForm):
     class Meta:
@@ -21,6 +23,7 @@ class ReportForm(forms.ModelForm):
 
     class Meta:
         model = Report
-        fields = ('short','detailed','file',)
+        fields = ['short','detailed','file','visibility']
+        #widgets = {'visibility': RadioSelect(),}
 
 
