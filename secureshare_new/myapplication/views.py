@@ -38,7 +38,8 @@ def report_new(request):
         if form.is_valid():
             newReport = form.save(commit=False)
             newReport.timestamp = timezone.now()
-            newReport.file = request.FILES['file']
+            #if request.FILES['file']:
+            #   newReport.file = request.FILES['file']
             newReport.save()
 
             # Redirect to the report list after POST

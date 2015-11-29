@@ -10,5 +10,10 @@ class Report(models.Model):
     #detailed description
     detailed = models.TextField()
     #one or more files
-    file = models.FileField(upload_to='documents/%Y/%m/%d', blank=True)
+    file = models.FileField(upload_to='documents/%Y/%m/%d', blank=True, null=True)
     #private/public
+    P_CHOICES = (
+        (u'private', u'private'),
+        (u'public', u'public'),
+    )
+    visibility = models.CharField(max_length=7, choices=P_CHOICES, default='private')
