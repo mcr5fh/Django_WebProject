@@ -2,13 +2,14 @@
 from django.conf.urls import patterns, url
 
 urlpatterns = patterns('myapplication.views',
+    url(r'^index/$', 'index', name='index'),
     url(r'^list/$', 'list', name='list'),
     url(r'^delete/$', 'delete', name='delete'),
     url(r'^register/$', 'register', name='register'),
-    url(r'^login/$','login_view', name='login_view'),
+    url(r'^login/$','login_view', name='login'),
     url(r'^report/$', 'report_new', name ='report'),
     url(r'^report/(?P<pk>[0-9]+)/edit/$', 'report_edit', name='report_edit'),
-    url(r'^login/$', 'auth_login', name ='login'),
+    #url(r'^login/$', 'auth_login', name ='login'),
 )
 
 

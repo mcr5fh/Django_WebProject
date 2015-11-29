@@ -25,5 +25,9 @@ from django.contrib import admin
 urlpatterns = [
     url(r'^admin/', include(admin.site.urls)),
     url(r'^myapplication/',include('myapplication.urls')),
-    url(r'^$', RedirectView.as_view(url='/myapplication/list/', permanent=True)),
+    url(r'^$', RedirectView.as_view(url='/myapplication/index/', permanent=True)),
+    #This makes is so that the login redirect goes to the proper login page
+    url(r'^accounts/', RedirectView.as_view(url='/myapplication/login/', permanent=True)),
+    url(r'^messages/', include('postman.urls', namespace='postman', app_name='postman')),
+
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

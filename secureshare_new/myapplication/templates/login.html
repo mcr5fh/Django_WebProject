@@ -2,26 +2,29 @@
 <html lang="en">
   <head>
     <meta charset="utf-8">
-    <title>Login</title>
+    <title>Logged In!</title>
   </head>
   <body>
-    <h3> User/Super User Login Page </h3>
-    {% if login_failed %}
-    <p color='red'> Login Failed.  Please try again. </p>
-    {% endif %}
-    <form method="post"> {% csrf_token %}
 
-      <label for="username">Username: </label>
-      <input id="username" type="text" name="username">
+    {% if logged_in %}
+      <p>You are logged in.</p>
+          <form action="{% url "index" %}" method="post" enctype="multipart/form-data">{% csrf_token %}
+                <input type="hidden" name='' value="False" />
+                <input type='submit' value='To SecureShare Home' />
+          </form>
 
-      <label for="password">Password: </label>
-      <input id="password" type="password" name="password">
-    
-      </br>
-      </br>
+         <form action="{% url "login" %}" method="post" enctype="multipart/form-data">{% csrf_token %}
+			<input type="hidden" name='logout' value="False" />
+			<input type='submit' value='Logout' />
+        </form>
+    {% else %}
+        <h3> User/Super User Login Page </h3>
+    <form method="post" > {% csrf_token %}
+        {{ login_form.as_p }}
 
-      <input type="submit" value="Login">
-
+      <input type="submit" value="OK">
     </form>
+    {% endif %}
+
   </body>
 </html>

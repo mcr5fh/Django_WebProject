@@ -35,7 +35,10 @@ INSTALLED_APPS = (
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'myapplication',
+    'postman'
 )
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+POSTMAN_AUTO_MODERATE_AS = True
 
 MIDDLEWARE_CLASSES = (
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -54,7 +57,7 @@ TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
         'DIRS': [
-            os.path.join(BASE_DIR, 'myapplication', 'templates')
+            os.path.join(BASE_DIR, 'myapplication', 'templates', 'postman')
         ],
         'APP_DIRS': True,
         'OPTIONS': {

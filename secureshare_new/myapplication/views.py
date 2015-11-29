@@ -7,14 +7,15 @@ from django.template import RequestContext
 from django.http import HttpResponseRedirect
 from django.core.urlresolvers import reverse
 from django.shortcuts import get_object_or_404
-from django.contrib.auth import authenticate, login, logout
-from django.utils import timezone
 
 from myapplication.forms import UserForm
 from myapplication.models import Report
 from myapplication.forms import ReportForm
+from django.utils import timezone
 from myapplication.forms import LoginForm
+from django.contrib.auth.decorators import login_required
 
+from django.contrib.auth import authenticate, login, logout
 
 # import the logging library
 import logging
@@ -22,9 +23,17 @@ import logging
 # Get an instance of a logger
 logger = logging.getLogger(__name__)
 
+
+@login_required
+def index(request):
+      return render(request, 'index.html')
+
+@login_required
 def report_new(request):
+    logger.error("User in request: " + request.user.username)
     # Handle file upload
     if request.method == 'POST':
+        #logger.error("User in request: " + request.user.username)
         form = ReportForm(request.POST, request.FILES)
         if form.is_valid():
             newReport = form.save(commit=False)
@@ -40,7 +49,7 @@ def report_new(request):
 
 
 
-
+@login_required
 def list(request):
 
     # Load documents for the list page
@@ -53,9 +62,11 @@ def list(request):
         context_instance=RequestContext(request)
     )
 
+@login_required
 def delete(request):
     if request.method != 'POST':
-        raise HTTP404
+        logger.log("METHOD NOT POST")
+        #raise HTTP404
 
     reportId = request.POST.get('report', None)
     reportToDel = get_object_or_404(Report, pk = reportId)
@@ -65,6 +76,7 @@ def delete(request):
 
     return HttpResponseRedirect(reverse('myapplication.views.list'))
 
+@login_required
 def report_edit(request, pk):
     report = get_object_or_404(Report, pk=pk)
     if request.method == 'POST':
@@ -80,7 +92,7 @@ def report_edit(request, pk):
         form = ReportForm(instance=report) # A empty, unbound form
     return render(request, 'report_edit.html', {'form': form, 'report': report})
 
-
+@login_required
 def makedir(request):
     dirname = datetime.now().strftime('%Y.%m.%d.%H.%M.%S') #2010.08.09.12.08.45
     os.mkdir(os.path.join('/documents', dirname))
@@ -123,44 +135,30 @@ def register(request):
 
     return render_to_response('register.html', {'user_form': user_form,'registered': registered}, context)
 
-def auth_login(request):
-    context = RequestContext(request)
+'''
+def logout_view(request):
     if request.method == 'POST':
-        #check to see if the post came from the logout in the reports page
+
+         #check to see if the post came from the logout in the reports page
         if 'logout' in request.POST:
             logout(request)
             logger.error('Logging out')
-            return render(request, 'login.html')
-
-        username = request.POST['username']
-        password = request.POST['password']
-        user = authenticate(username=username, password=password)
-        if user is not None:
-            login(request, user)
-            logger.error('User Found')
-            # Redirect to the list of their reports.
-            return render(request, 'list.html', {'user_info_dict': request.POST})
-
-
-        else:
-            logger.error('User Not Found')
-            # Return an 'invalid login' error message.
-            return render(request, 'login.html', {'login_failed': True})
-    else:
-        #show the normal user form when theres not a post
-        user_form = UserForm()
-
-
-    return render_to_response('login.html', {'user_form': user_form,'login_failed': False}, context)
-
+            login_form = LoginForm('','')
+            return render(request, 'login.html', {'login_form': login_form})
+'''
 
 def login_view(request):
     context = RequestContext(request)
     logged_in = False
-    
-    
 
     if request.method == 'POST':
+
+         #check to see if the post came from the logout in the reports page
+        if 'logout' in request.POST:
+            logout(request)
+            logger.error('Logging out')
+            login_form = LoginForm('','')
+            return render(request, 'login.html', {'login_form': login_form})
 
         login_form = LoginForm(data=request.POST)
 
@@ -175,17 +173,19 @@ def login_view(request):
                 if user.is_active:
                     login(request, user)
                     logged_in = True
+                    logger.error("User: " + user.username)
                         # Return to reports page
-                    return render_to_response('report.html', {'login_form': login_form,'logged_in': logged_in}, context)
-                #else:
-                #return 'invalid login error message'
+                    return render_to_response('index.html', {'login_form': login_form,'logged_in': logged_in, 'user': user}, context)
+            else:
+                logger.error('invalid login error message')
     
                     
     else:
+        if request.user.is_authenticated():
+            logged_in = True
         login_form = LoginForm()
     
-    return render_to_response('logged_in.html', {'login_form': login_form,'logged_in': logged_in}, context)
-
+    return render_to_response('login.html', {'login_form': login_form,'logged_in': logged_in}, context)
 
 
 
