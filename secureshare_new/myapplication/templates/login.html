@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="utf-8">
-    <title>Logged In!</title>
-  </head>
-  <body>
+{% extends "my_BASE.html" %}
+
+		{% block title %} SecureShare Login {%  endblock %}
+
+
+  {% block content %}
 
     {% if logged_in %}
       <p>You are logged in.</p>
@@ -26,5 +26,4 @@
     </form>
     {% endif %}
 
-  </body>
-</html>
+  {% endblock %}

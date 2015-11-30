@@ -1,10 +1,11 @@
 <!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="utf-8">
-    <title>Register</title>
-  </head>
-  <body>
+{% extends "my_BASE.html" %}
+
+		{% block title %} Register User {%  endblock %}
+
+
+  {% block content %}
+
     {% if registered %}
       <p>Thank you for registering 
         Please log in <a href='../login'>here</a>. </p>
@@ -42,5 +43,4 @@
 
     </form>
     {% endif %}
-  </body>
-</html>
+  {% endblock %}
