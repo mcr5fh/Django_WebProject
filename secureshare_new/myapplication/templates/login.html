@@ -18,12 +18,21 @@
 			<input type='submit' value='Logout' />
         </form>
     {% else %}
-        <h3> User/Super User Login Page </h3>
+
+    <h3> User/Super User Login Page </h3>
+
     <form method="post" > {% csrf_token %}
         {{ login_form.as_p }}
-
-      <input type="submit" value="OK">
+        <input type="submit" value="OK">
     </form>
+
+        </br>
+    <span>Dont have an account?
+        <form action="{% url "register" %}" method="post" enctype="multipart/form-data">{% csrf_token %}
+            <input type='submit' value='Register' />
+        </form>
+    </span>
+
     {% endif %}
 
   {% endblock %}
