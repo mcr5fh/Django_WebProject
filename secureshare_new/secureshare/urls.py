@@ -25,6 +25,7 @@ from django.contrib import admin
 urlpatterns = [
     url(r'^admin/', include(admin.site.urls)),
     url(r'^myapplication/',include('myapplication.urls')),
+    url(r'api/', include('api.urls')),
     url(r'^$', RedirectView.as_view(url='/myapplication/index/', permanent=True)),
     #This makes is so that the login redirect goes to the proper login page
     url(r'^accounts/', RedirectView.as_view(url='/myapplication/login/', permanent=True)),

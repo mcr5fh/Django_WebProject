@@ -1,0 +1,25 @@
+from django.shortcuts import render
+from django.http import HttpResponse
+import json
+
+from myapplication.models import Report
+
+test_json = ['hello', {1:'2'}]
+
+def report_to_dict(report):
+    result = {}
+    result['timestamp'] = str(report.timestamp)
+    result['short'] = str(report.short)
+    result['detailed'] = str(report.detailed)
+    result['url'] = '/media/' + str(report.file)
+
+    return result
+
+def file_list(request):
+    #reports = []
+    report_objs = Report.objects.all()
+    reports = map(report_to_dict, report_objs)
+
+    return HttpResponse(json.dumps(list(reports)))
+            
+
