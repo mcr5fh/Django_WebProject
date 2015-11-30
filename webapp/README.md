@@ -1,3 +1,0 @@
-# Webapp
-
-The Django application
