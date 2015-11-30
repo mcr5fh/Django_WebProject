@@ -1,12 +1,10 @@
 <!DOCTYPE html>
-<html>
-	<head>
-		<meta charset="utf-8">
-		<title>Minimal Django File Upload Example</title>	
-	</head>
+{% extends "my_BASE.html" %}
 
-	<body>
-		<!-- Upload form. Note enctype attribute! -->
+		{% block title %} New Report {%  endblock %}
+
+
+        <!-- Upload form. Note enctype attribute! -->
 		{% block content %}
             <h1>New Report</h1>
             <form action="{% url "report" %}" method="post" enctype="multipart/form-data">
@@ -16,6 +14,3 @@
                 <p><input type="submit" value="Upload" /></p>
             </form>
         {% endblock %}
-	</body>
-
-</html> 

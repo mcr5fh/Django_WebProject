@@ -1,28 +1,33 @@
+
+
 <!DOCTYPE html>
-<html>
-	<head>
-		<meta charset="utf-8">
-		<title>Minimal Django File Upload Example</title>	
-	</head>
+{% extends "my_BASE.html" %}
 
-	<body>
 
+		{% block title %} Report List {%  endblock %}
+
+    {% block content %}
+ 	<div class="container theme-showcase" role="main">		
+
+      <!-- Main jumbotron for a primary marketing message or call to action -->
+      <div class="jumbotron">
           <p>{{ user.username }}'s Reports (This is actually ALL of the reports. We should fix this).</p>
-		<!-- List of uploaded documents -->
 
-        <!-- load attachment_tags %} -->
+		<!-- List of uploaded documents border="1" style="width:100%"  -->
 
 		{% if reports %}
-			<table border="1" style="width:100%">
+			<table class="table table-striped">
 				<!--<ul> -->
 			<tr>
-				<td>Date Uploaded</td>
-                <td>Report Title</td>
-                <td>Report Description</td>
-                <td>Report Files</td>
-                <td>Visibility</td>
-                <td>Edit Report</td>
-                <td>Delete Report</td>
+
+				<td><b>Date Uploaded</b></td>
+                <td><b>Report Title</b></td>
+                <td><b>Report Description</b></td>
+                <td><b>Report Files</b></td>
+                <td><b>Visibility</b></td>
+                <td><b>Edit Report</b></td>
+                <td><b>Delete Report</b></td>
+
 			</tr>
 			{% for report in reports %}
 			<tr>
@@ -89,6 +94,12 @@
 
 			</form>
 		{% endif %}
-	</body>
+	   </div>
 
-</html> 
+
+	</div>
+
+    {% endblock %}
+
+
+

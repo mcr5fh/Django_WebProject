@@ -1,10 +1,11 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title></title>
-</head>
-<body>
+{% extends "my_BASE.html" %}
+
+		{% block title %} SecureShare Home {%  endblock %}
+
+
+  {% block content %}
+    <div class="container">
         {% csrf_token %}
       <p>{{ user.username }} is logged in.</p>
         </br>
@@ -23,10 +24,12 @@
             {% endblock %}
         </ul>
         </br>
-        <form action="{% url "login" %}" method="post" enctype="multipart/form-data">{% csrf_token %}
-			<input type="hidden" name='logout' value="False" />
-			<input type='submit' value='Logout' />
-        </form>
+       
+            <form action="{% url "login" %}" method="post" enctype="multipart/form-data">{% csrf_token %}
+        		<input type="hidden" name='logout' value="False" />
+        		<input type='submit' value='Logout' />
+            
+            </form>
+        </div>
 
-</body>
-</html>
+    {% endblock %}
