@@ -9,6 +9,9 @@
 
           <p>{{ user.username }}'s Reports (This is actually ALL of the reports. We should fix this).</p>
 		<!-- List of uploaded documents -->
+
+        <!-- load attachment_tags %} -->
+
 		{% if reports %}
 			<table border="1" style="width:100%">
 				<!--<ul> -->
@@ -16,7 +19,7 @@
 				<td>Date Uploaded</td>
                 <td>Report Title</td>
                 <td>Report Description</td>
-                <td>Report File</td>
+                <td>Report Files</td>
                 <td>Visibility</td>
                 <td>Edit Report</td>
                 <td>Delete Report</td>
@@ -27,22 +30,44 @@
                 <td>{{ report.short }}</td>
                 <td>{{ report.detailed }}</td>
                 <td>
-                {%  if report.file %}
-				    <a href="{{ report.file.url }}">{{ report.file.name }}</a></td>
-                {% else %}
-                    No file
-                {% endif %}
+                    <!-- get_attachments report as attachments %} -->
+                    {% if report.file1 or report.file2 or report.file3 or report.file4 or report.file5 %}
+                        {% if report.file1 %}
+                            <a href="{{ report.file1.url }}">{{ report.file1.name }}</a>
+                            <br/>
+                        {% endif %}
+                        {% if report.file2 %}
+                            <a href="{{ report.file2.url }}">{{ report.file2.name }}</a>
+                            <br/>
+                        {% endif %}
+                        {% if report.file3 %}
+                            <a href="{{ report.file3.url }}">{{ report.file3.name }}</a>
+                            <br/>
+                        {% endif %}
+                        {% if report.file4 %}
+                            <a href="{{ report.file4.url }}">{{ report.file4.name }}</a>
+                            <br/>
+                        {% endif %}
+                        {% if report.file5 %}
+                            <a href="{{ report.file5.url }}">{{ report.file5.name }}</a>
+                            <br/>
+                        {% endif %}
+                    {% else %}
+                        No files
+                    {% endif %}
+
                 </td>
                 <td>{{ report.visibility }}</td>
-                <td>
+
                 <form action="{% url "delete" %}" method="post" enctype="multipart/form-data">
                     {% csrf_token %}
+                    <td>
                      <a class="btn btn-default" href="{% url 'report_edit' pk=report.pk %}" role="button">Edit</a>
                      <input type="hidden" name="report" value="{{ report.pk }}" />
                      </td>
                      <td>
                      <input type="submit" value="Delete" />
-                 </td>
+                     </td>
                 </form>
                </tr>
 			{% endfor %}
