@@ -11,15 +11,14 @@
 
       <!-- Main jumbotron for a primary marketing message or call to action -->
       <div class="jumbotron">
-          <p>{{ user.username }}'s Reports (This is actually ALL of the reports. We should fix this).</p>
-
+          <p>{{ user.username }}'s Reports</p>
 		<!-- List of uploaded documents border="1" style="width:100%"  -->
 
 		{% if reports %}
 			<table class="table table-striped">
 				<!--<ul> -->
 			<tr>
-
+                <td><b>Uploaded by</b></td>
 				<td><b>Date Uploaded</b></td>
                 <td><b>Report Title</b></td>
                 <td><b>Report Description</b></td>
@@ -31,9 +30,10 @@
 			</tr>
 			{% for report in reports %}
 			<tr>
+                <td>{{ report.username }}</td>
                 <td>{{ report.timestamp }}</td>
                 <td>{{ report.short }}</td>
-                <td>{{ report.detailed }}</td>
+                <td>{{ report.detailed|truncatechars:30 }}</td>
                 <td>
                     <!-- get_attachments report as attachments %} -->
                     {% if report.file1 or report.file2 or report.file3 or report.file4 or report.file5 %}
