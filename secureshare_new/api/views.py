@@ -1,6 +1,8 @@
 from django.shortcuts import render
 from django.http import HttpResponse
+
 import json
+import sys
 
 from myapplication.models import Report
 
@@ -16,10 +18,10 @@ def report_to_dict(report):
     return result
 
 def file_list(request):
-    #reports = []
     report_objs = Report.objects.all()
     reports = map(report_to_dict, report_objs)
 
-    return HttpResponse(json.dumps(list(reports)))
-            
+    print(request.method + ': ' + str(request.body))
+    sys.stdout.flush() # required to print to heroku console
 
+    return HttpResponse(json.dumps(list(reports)))

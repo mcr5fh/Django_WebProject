@@ -1,6 +1,7 @@
 import urllib.request, urllib.error
 import json
 import getpass
+import requests
 
 #url = input('Enter a URL: ')
 #DEPLOY_URL = 'https://shrouded-garden-8170.herokuapp.com/'
@@ -13,10 +14,11 @@ def authenticate():
     USER = input('username: ')
     PASS = getpass.getpass('password: ')
 
-authenticate()
+#authenticate()
 url = DEPLOY_URL + 'api/list'
 
 filename, _ = urllib.request.urlretrieve(url) # download the file and keep its name
+#filename = requests.get(
 reports = json.load(open(filename))
 
 print('List of reports and (attached files): ')
