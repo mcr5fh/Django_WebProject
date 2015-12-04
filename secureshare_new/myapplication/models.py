@@ -18,7 +18,7 @@ class Report(models.Model):
     #short description
     short = models.CharField(max_length=200)
     #detailed description22
-    detailed = models.TextField()
+    detailed = models.TextField(default='')
     #one or more files
     file1 = models.FileField(upload_to='attachments',blank=True, null=True)
     file2 = models.FileField(upload_to='attachments',blank=True, null=True)
