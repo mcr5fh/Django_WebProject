@@ -11,13 +11,23 @@ from django.views.generic.edit import FormView
 
 from myapplication.forms import UserForm
 from myapplication.models import Report
+
 from myapplication.models import Folder
+
+
+#from myapplication.models import Attachment
+
+#from myapplication.forms import Report_FolderForm
+#from myapplication.models import Report_Folder
+
 from myapplication.forms import ReportForm
 from django.utils import timezone
 from myapplication.forms import LoginForm
 from django.contrib.auth.decorators import login_required
 
 from django.contrib.auth import authenticate, login, logout
+
+from django.db.models import Q
 
 # import the logging library
 import logging
@@ -32,19 +42,26 @@ def index(request):
 
 @login_required
 def report_new(request):
-    logger.error("User in request: " + request.user.username)
+    #logger.error("User in request: " + request.user.username)
     # Handle file upload
     if request.method == 'POST':
-        #logger.error("User in request: " + request.user.username)
-        form = ReportForm(request.POST, request.FILES)
+        logger.error("User in request: " + request.user.username)
+        form = ReportForm(request.POST, request.FILES)#, {'user': request.user.username})
 
         if form.is_valid():
-            newReport = form.save(commit=False)
-            newReport.timestamp = timezone.now()
+
+            #newReport = form.save(commit=False)
+            #newReport.timestamp = timezone.now()
+
             #if request.FILES['file']:
             #   newReport.file = request.FILES['file']
+            #newReport.save()
+
+            #form.Meta.fields = request.user.username
+            newReport = form.save(commit=False)
+            newReport.username = request.user.username
             newReport.save()
-            #form.save()
+
             #for afile in request.FILES.getlist('files'):
                 #add file to model
 
@@ -57,14 +74,20 @@ def report_new(request):
     return render(request, 'report.html', {'form': form})
 
 
-
+#test this more. Admin must be able to see all reports
 @login_required
 def list(request):
 
     # Load documents for the list page
-    reports = Report.objects.all()
     #attachments = Attachment.objects.all()
 
+    if request.user.is_superuser:
+        reports = Report.objects.all()
+    else:
+       reports = Report.objects.filter(Q(username=request.user.username) | Q(visibility="public"))
+
+    #TODO: Add visibility to folders
+    #folders = Report_Folder.objects.filter(Q(user=request.user.username))
     # Render list page with the documents and the form
     return render_to_response(
         'list.html',
@@ -72,10 +95,20 @@ def list(request):
         context_instance=RequestContext(request)
     )
 
+'''
+@login_required
+def report_folder_new(request):
+
+    folder_form = Report_FolderForm()
+
+    return render(request, 'report_folder.html', {'folder_form': folder_form})
+'''
+
+
 @login_required
 def delete(request):
     if request.method != 'POST':
-        logger.log("METHOD NOT POST")
+        logger.error("METHOD NOT POST")
         #raise HTTP404
 
     reportId = request.POST.get('report', None)
@@ -205,6 +238,7 @@ def register(request):
 
             registered = True
 
+
     else:
         user_form = UserForm()
 #profile_form = UserProfileForm()
@@ -226,6 +260,7 @@ def logout_view(request):
 def login_view(request):
     context = RequestContext(request)
     logged_in = False
+    invalid_login = False
 
     if request.method == 'POST':
 
@@ -233,8 +268,8 @@ def login_view(request):
         if 'logout' in request.POST:
             logout(request)
             logger.error('Logging out')
-            login_form = LoginForm('','')
-            return render(request, 'login.html', {'login_form': login_form})
+            login_form = LoginForm()
+            return render(request, 'login.html', {'login_form': login_form, 'invalid_log': invalid_login})
 
         login_form = LoginForm(data=request.POST)
 
@@ -243,18 +278,23 @@ def login_view(request):
             username = request.POST['username']
             password = request.POST['password']
             user = authenticate(username=username, password=password)
-            
+
             if user is not None:
 
                 if user.is_active:
                     login(request, user)
                     logged_in = True
                     logger.error("User: " + user.username)
-                        # Return to reports page
+                    # Return to reports page
                     return render_to_response('index.html', {'login_form': login_form,'logged_in': logged_in, 'user': user}, context)
             else:
                 logger.error('invalid login error message')
-    
+                logged_in = False
+                invalid_login = True
+                login_form = LoginForm()
+                return render(request, "login.html", {'login_form': login_form, 'invalid_log': invalid_login, 'logged_in': logged_in})
+
+
                     
     else:
         if request.user.is_authenticated():

@@ -8,6 +8,8 @@ urlpatterns = patterns('myapplication.views',
     url(r'^register/$', 'register', name='register'),
     url(r'^login/$','login_view', name='login'),
     url(r'^report/$', 'report_new', name ='report'),
+   # url(r'^report_folder/$', 'report_folder_new', name ='report_folder'),
+    #TODO: Report folder edit
     url(r'^report/(?P<pk>[0-9]+)/edit/$', 'report_edit', name='report_edit'),
     url(r'^manage/$', 'manage', name='manage'),
     url(r'^folder_new/$', 'folder_new', name='folder_new'),
