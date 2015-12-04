@@ -8,7 +8,13 @@ urlpatterns = patterns('myapplication.views',
     url(r'^register/$', 'register', name='register'),
     url(r'^login/$','login_view', name='login'),
     url(r'^report/$', 'report_new', name ='report'),
+   # url(r'^report_folder/$', 'report_folder_new', name ='report_folder'),
+    #TODO: Report folder edit
     url(r'^report/(?P<pk>[0-9]+)/edit/$', 'report_edit', name='report_edit'),
+    url(r'^manage/$', 'manage', name='manage'),
+    url(r'^folder_new/$', 'folder_new', name='folder_new'),
+    url(r'^folder_delete/$', 'folder_delete', name='folder_delete'),
+    url(r'^move_report/$', 'move_report', name='move_report'),
     #url(r'^login/$', 'auth_login', name ='login'),
 )
 

@@ -20,12 +20,16 @@
     {% else %}
 
     <h3> User/Super User Login Page </h3>
-
+    {% if invalid_log  %}
+         <div class="alert alert-danger" role="alert">
+            <strong>Invalid login.</strong> Please enter a valid username and password.
+         </div>
+    {% endif %}
     <form method="post" > {% csrf_token %}
         {{ login_form.as_p }}
         <input type="submit" value="OK">
     </form>
-
+        </hr>
         </br>
     <span>Dont have an account?
         <form action="{% url "register" %}" method="post" enctype="multipart/form-data">{% csrf_token %}
