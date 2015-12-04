@@ -3,6 +3,13 @@ from django.db import models
 from django.utils import timezone
 #from django.utils.translation import ugettext_lazy as _
 
+class Folder(models.Model):
+    name = models.CharField(max_length=30)
+    timestamp = models.DateTimeField(default=timezone.now)
+
+    def __str__(self):
+        return self.name
+
 class Report(models.Model):
     #timestamp`
     timestamp = models.DateTimeField(default=timezone.now)
@@ -22,6 +29,9 @@ class Report(models.Model):
         (u'public', u'public'),
     )
     visibility = models.CharField(max_length=7, choices=P_CHOICES, default='private')
+    folder = models.ForeignKey(Folder, null=True)
+    def __str__(self):
+        return self.short
 
 #class Attachment(models.Model):
 #    report = models.ForeignKey(Report, verbose_name=_('Report'), related_name='attachment_set', blank=True, null=True)

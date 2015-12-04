@@ -11,7 +11,7 @@ from django.views.generic.edit import FormView
 
 from myapplication.forms import UserForm
 from myapplication.models import Report
-#from myapplication.models import Attachment
+from myapplication.models import Folder
 from myapplication.forms import ReportForm
 from django.utils import timezone
 from myapplication.forms import LoginForm
@@ -39,12 +39,12 @@ def report_new(request):
         form = ReportForm(request.POST, request.FILES)
 
         if form.is_valid():
-            #newReport = form.save(commit=False)
-            #newReport.timestamp = timezone.now()
+            newReport = form.save(commit=False)
+            newReport.timestamp = timezone.now()
             #if request.FILES['file']:
             #   newReport.file = request.FILES['file']
-            #newReport.save()
-            form.save()
+            newReport.save()
+            #form.save()
             #for afile in request.FILES.getlist('files'):
                 #add file to model
 
@@ -103,13 +103,13 @@ def report_edit(request, pk):
     if request.method == 'POST':
         form = ReportForm(request.POST, request.FILES, instance=report)
         if form.is_valid():
-            #report = form.save(commit=False)
-            #report.timestamp = timezone.now()
+            report = form.save(commit=False)
+            report.timestamp = timezone.now()
             #for attachment in report.attachment_set.all():
             #    attachment.file.save()
             #    attachment.save()
-            #report.save()
-            form.save()
+            report.save()
+            #form.save()
             # Redirect to the report list after POST
             return HttpResponseRedirect(reverse('myapplication.views.list'))
     else:
@@ -117,11 +117,63 @@ def report_edit(request, pk):
     return render(request, 'report_edit.html', {'form': form, 'report': report})
 
 @login_required
-def makedir(request):
-    dirname = datetime.now().strftime('%Y.%m.%d.%H.%M.%S') #2010.08.09.12.08.45
-    os.mkdir(os.path.join('/documents', dirname))
-    return HttpResponseRedirect(reverse('myapplication.views.list'))
+def manage(request):
+    reports = Report.objects.all()
+    folders = Folder.objects.all()
 
+    # Render manage page with user reports and folders
+    return render_to_response(
+        'manage.html',
+        {'reports': reports, 'folders': folders},
+        context_instance=RequestContext(request)
+    )
+
+@login_required
+def folder_new(request):
+    #create new folder
+    if request.method == 'POST':
+        fname = request.POST.get("name", "")
+        f = Folder(name=fname)
+        f.save()
+    return HttpResponseRedirect(reverse('myapplication.views.manage'))
+
+@login_required
+def folder_delete(request):
+    if request.method != 'POST':
+        logger.log("METHOD NOT POST")
+        #raise HTTP404
+
+    folderPk = request.POST.get('folder', None)
+    folderToDel = get_object_or_404(Folder, pk = folderPk)
+    for reportToDel in folderToDel.report_set.all():
+        if reportToDel.file1:
+            reportToDel.file1.delete()
+        if reportToDel.file2:
+            reportToDel.file2.delete()
+        if reportToDel.file3:
+            reportToDel.file3.delete()
+        if reportToDel.file4:
+            reportToDel.file4.delete()
+        if reportToDel.file5:
+            reportToDel.file5.delete()
+        reportToDel.delete()
+    folderToDel.delete()
+
+    return HttpResponseRedirect(reverse('myapplication.views.manage'))
+
+@login_required
+def move_report(request):
+    #create new folder
+    if request.method == 'POST':
+        reportPk = request.POST.get("reportpk", "")
+        folderPk = request.POST.get("folderpk", "")
+        r = Report.objects.get(pk=reportPk)
+        f = Folder.objects.get(pk=folderPk)
+        f.report_set.add(r)
+        f.save()
+        #f.save()
+        #r.save()
+    return HttpResponseRedirect(reverse('myapplication.views.manage'))
 
 #NOTE: if user already exists then it jsut resets
 def register(request):
