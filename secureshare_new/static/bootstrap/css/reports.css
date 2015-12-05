@@ -12,9 +12,7 @@
 * {
   margin: 0;
 }
-html, body {
-  height: 100%;
-}
+
 .report {
   min-height: 150px;
   width: 175px;

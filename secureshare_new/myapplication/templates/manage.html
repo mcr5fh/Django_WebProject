@@ -76,7 +76,7 @@
 
 <h2>Your Reports</h2>
 {% if reports %}
-    <div id ="reports">
+    <div id ="reports" style="overflow-x:auto; height: 300px;">
     {% for report in reports %}
 		<div class="report" draggable="true"><header>{{ report.short }}</header>
             <div hidden> {{ report.pk }} </div>
@@ -125,17 +125,6 @@
         </div>
     {% endfor %}
     </div>
-    </br>
-    </br>
-    </br>
-    </br>
-    </br>
-    </br>
-    </br>
-    </br>
-    </br>
-    </br>
-    </br>
     {% else %}
     <h3> No Reports </h3>
 {% endif %}
