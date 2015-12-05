@@ -24,8 +24,6 @@
                 <td><b>Report Description</b></td>
                 <td><b>Report Files</b></td>
                 <td><b>Visibility</b></td>
-                <td><b>Edit Report</b></td>
-                <td><b>Delete Report</b></td>
 
 			</tr>
 			{% for report in reports %}
@@ -64,16 +62,7 @@
                 </td>
                 <td>{{ report.visibility }}</td>
 
-                <form action="{% url "delete" %}" method="post" enctype="multipart/form-data">
-                    {% csrf_token %}
-                    <td>
-                     <a class="btn btn-default" href="{% url 'report_edit' pk=report.pk %}" role="button">Edit</a>
-                     <input type="hidden" name="report" value="{{ report.pk }}" />
-                     </td>
-                     <td>
-                     <input type="submit" value="Delete" />
-                     </td>
-                </form>
+
                </tr>
 			{% endfor %}
 			</table>
