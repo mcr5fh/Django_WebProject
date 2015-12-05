@@ -27,3 +27,12 @@ class ReportForm(forms.ModelForm):
         #widgets = {'visibility': RadioSelect(),}
 
 
+class LOUForm(forms.ModelForm):
+    is_activated = forms.BooleanField()
+    class Meta:
+        model = User
+        fields = {'is_activated'}
+
+
+
+

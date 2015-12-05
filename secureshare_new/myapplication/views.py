@@ -7,8 +7,9 @@ from django.template import RequestContext
 from django.http import HttpResponseRedirect
 from django.core.urlresolvers import reverse
 from django.shortcuts import get_object_or_404
+from django.contrib.auth.models import User
 
-from myapplication.forms import UserForm
+from myapplication.forms import UserForm, LOUForm
 from myapplication.models import Report
 from myapplication.forms import ReportForm
 from django.utils import timezone
@@ -26,7 +27,18 @@ logger = logging.getLogger(__name__)
 
 @login_required
 def index(request):
-      return render(request, 'index.html')
+    return render(request, 'index.html')
+
+
+@login_required
+def list_of_users(request):
+    if request.user.is_superuser:
+        lou_form = LOUForm(data=request.POST)
+        list = User.objects.all()
+        return render(request, 'list_of_users_sm.html', {'lou_form':lou_form,'list': list})
+    else:
+        return render(request,'list_of_users.html')
+
 
 @login_required
 def report_new(request):

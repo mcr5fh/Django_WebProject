@@ -9,6 +9,7 @@ urlpatterns = patterns('myapplication.views',
     url(r'^login/$','login_view', name='login'),
     url(r'^report/$', 'report_new', name ='report'),
     url(r'^report/(?P<pk>[0-9]+)/edit/$', 'report_edit', name='report_edit'),
+    url(r'list_of_users/$', 'list_of_users', name = 'list_of_users'),
     #url(r'^login/$', 'auth_login', name ='login'),
 )
 
