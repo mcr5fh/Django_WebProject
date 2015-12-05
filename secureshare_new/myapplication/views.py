@@ -67,7 +67,7 @@ def report_new(request):
 
 
             # Redirect to the report list after POST
-            return HttpResponseRedirect(reverse('myapplication.views.list'))
+            return HttpResponseRedirect(reverse('myapplication.views.manage'))
     else:
         form = ReportForm() # A empty, unbound form
        # fileForm = FileForm()
@@ -128,7 +128,7 @@ def delete(request):
         reportToDel.file5.delete()
     reportToDel.delete()
 
-    return HttpResponseRedirect(reverse('myapplication.views.list'))
+    return HttpResponseRedirect(reverse('myapplication.views.manage'))
 
 @login_required
 def report_edit(request, pk):
@@ -144,7 +144,7 @@ def report_edit(request, pk):
             report.save()
             #form.save()
             # Redirect to the report list after POST
-            return HttpResponseRedirect(reverse('myapplication.views.list'))
+            return HttpResponseRedirect(reverse('myapplication.views.manage'))
     else:
         form = ReportForm(instance=report)
     return render(request, 'report_edit.html', {'form': form, 'report': report})
@@ -179,6 +179,8 @@ def folder_delete(request):
     folderPk = request.POST.get('folder', None)
     folderToDel = get_object_or_404(Folder, pk = folderPk)
     for reportToDel in folderToDel.report_set.all():
+        folderToDel.report_set.remove(reportToDel);
+        '''
         if reportToDel.file1:
             reportToDel.file1.delete()
         if reportToDel.file2:
@@ -190,6 +192,7 @@ def folder_delete(request):
         if reportToDel.file5:
             reportToDel.file5.delete()
         reportToDel.delete()
+        '''
     folderToDel.delete()
 
     return HttpResponseRedirect(reverse('myapplication.views.manage'))

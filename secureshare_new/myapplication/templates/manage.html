@@ -2,10 +2,10 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css">
-    <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap-theme.min.css">
-    <link href={% block stylesheet %}"{% static 'bootstrap/css/reports.css' %}"{% endblock %}  rel="stylesheet">
-    <link href={% block stylesheet_1 %}"{% static 'bootstrap/css/folder.css' %}"{% endblock %}  rel="stylesheet">
+<link href={% block stylesheet_1 %}"{% static 'bootstrap/css/bootstrap.min.css' %}" {% endblock %} rel="stylesheet">
+        <link href={% block stylesheet_2 %} "{% static 'bootstrap/css/bootstrap.css'%}" {% endblock %}  rel="stylesheet">
+    <link href={% block stylesheet_3 %}"{% static 'bootstrap/css/reports.css' %}"{% endblock %}  rel="stylesheet">
+    <link href={% block stylesheet_4 %}"{% static 'bootstrap/css/folder.css' %}"{% endblock %}  rel="stylesheet">
 
     <script type="text/javascript">
         var dragSrcEl = null;
@@ -71,52 +71,64 @@
     <title></title>
 </head>
 <body onload="myFunction()">
+<h2>Create Report</h2>
+    <a class="btn btn-default" href="{% url 'report' %}" role="button">Go to New Report Page</a>
+
 <h2>Your Reports</h2>
 {% if reports %}
-    <div id ="reports">
+    <div id ="reports" style="overflow-x:auto; height: 300px;">
     {% for report in reports %}
 		<div class="report" draggable="true"><header>{{ report.short }}</header>
             <div hidden> {{ report.pk }} </div>
+
             {{ report.timestamp }} </br>
+            {{ report.visibility }} </br>
+
             {% if report.file1 or report.file2 or report.file3 or report.file4 or report.file5 %}
                 {% if report.file1 %}
-                     <a href="{{ report.file1.url }}">{{ report.file1.name }}</a>
+                     <a href="{{ report.file1.url }}">  {{ report.file1.name }}</a>
                      <br/>
                 {% endif %}
                 {% if report.file2 %}
-                     <a href="{{ report.file2.url }}">{{ report.file2.name }}</a>
+                     <a href="{{ report.file2.url }}"> {{ report.file2.name }}</a>
                      <br/>
                 {% endif %}
                 {% if report.file3 %}
-                    <a href="{{ report.file3.url }}">{{ report.file3.name }}</a>
+                    <a href="{{ report.file3.url }}"> {{ report.file3.name }}</a>
                     <br/>
                 {% endif %}
                 {% if report.file4 %}
-                    <a href="{{ report.file4.url }}">{{ report.file4.name }}</a>
+                    <a href="{{ report.file4.url }}"> {{ report.file4.name }}</a>
                     <br/>
                 {% endif %}
                 {% if report.file5 %}
-                    <a href="{{ report.file5.url }}">{{ report.file5.name }}</a>
+                    <a href="{{ report.file5.url }}"> {{ report.file5.name }}</a>
                     <br/>
                 {% endif %}
-                {% else %}
-                    No files
-                {% endif %}
-            {{ report.visibility }}
+            {% else %}
+                No files
+                <br/>
+            {% endif %}
 
+
+            <footer>
+            <form action="{% url "delete" %}" method="post" enctype="multipart/form-data">
+                    {% csrf_token %}
+
+                     <a class="btn btn-default" href="{% url 'report_edit' pk=report.pk %}" role="button">Edit</a>
+                     <input type="hidden" name="report" value="{{ report.pk }}" />
+
+                     <input type="submit" value="Delete" />
+
+                </form>
+            </footer>
         </div>
     {% endfor %}
     </div>
-    </br>
-    </br>
-    </br>
-    </br>
-    </br>
-    </br>
-    </br>
     {% else %}
     <h3> No Reports </h3>
 {% endif %}
+
 <h2>Create Folder </h2>
 <form action="{% url 'folder_new' %}" method="post" enctype="multipart/form-data">{% csrf_token %}
 	<h3> Folder Name: </h3> <input type="text" name='name'/>
@@ -128,28 +140,23 @@
      <div id ="folders">
     {% for folder in folders %}
 		<div class="folder"><header>{{ folder.name }}</header>
+        <div hidden> {{ folder.pk }}  </div>
             {% get_reports folder as reports %}
             {% if reports %}
             {% for report in reports %}
                 {{ report.short }}
+                <br/>
             {% endfor %}
         {% endif %}
-        <div hidden> {{ folder.pk }}  </div>
-        </div>
-    </br>
-    </br>
-    </br>
-    </br>
-    </br>
-    </br>
-    </br>
-        </br>
-        <form action="{% url "folder_delete" %}" method="post" enctype="multipart/form-data">
+
+        <footer>
+             <form action="{% url "folder_delete" %}" method="post" enctype="multipart/form-data">
             {% csrf_token %}
               <input type="hidden" name="folder" value="{{ folder.pk }}" />
-            <input type="submit" value="Delete" />
+            <input type="submit" value="Delete Folder" />
         </form>
-
+        </footer>
+        </div>
     {% endfor %}
     </div>
     {% else %}
@@ -161,3 +168,4 @@
 </form>
 </body>
 </html>
+
