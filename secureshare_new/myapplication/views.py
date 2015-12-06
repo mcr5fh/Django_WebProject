@@ -211,6 +211,20 @@ def move_report(request):
         #r.save()
     return HttpResponseRedirect(reverse('myapplication.views.manage'))
 
+@login_required
+def remove_report(request):
+
+    if request.method == 'POST':
+        reportPk = request.POST.get("report", "")
+        folderPk = request.POST.get("folder", "")
+        r = Report.objects.get(pk=reportPk)
+        f = Folder.objects.get(pk=folderPk)
+        f.report_set.remove(r)
+        f.save()
+        #f.save()
+        #r.save()
+    return HttpResponseRedirect(reverse('myapplication.views.manage'))
+
 #NOTE: if user already exists then it jsut resets
 def register(request):
     context = RequestContext(request)

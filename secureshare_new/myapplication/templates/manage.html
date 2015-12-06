@@ -144,7 +144,13 @@
             {% get_reports folder as reports %}
             {% if reports %}
             {% for report in reports %}
-                {{ report.short }}
+                <a href="{% url 'report_edit' pk=report.pk %}"> {{ report.short }}</a>
+                <form action="{% url "remove_report" %}" method="post" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    <input type="hidden" name="report" value="{{ report.pk }}" />
+                    <input type="hidden" name="folder" value="{{ folder.pk }}" />
+                    <input type="submit" value="x" />
+                </form>
                 <br/>
             {% endfor %}
         {% endif %}
