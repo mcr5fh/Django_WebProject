@@ -311,7 +311,7 @@ class ReplyView(ComposeMixin, FormView):
         context['recipient'] = self.parent.obfuscated_sender
         return context
 
-
+from Crypto.Cipher import ARC4
 class DisplayMixin(NamespaceMixin, object):
     """
     Code common to the by-message and by-conversation views.
@@ -322,7 +322,7 @@ class DisplayMixin(NamespaceMixin, object):
         ``template_name``: the name of the template to use
 
     """
-    http_method_names = ['get']
+    http_method_names = ['get', 'post']
     form_class = QuickReplyForm
     formatters = (format_subject, format_body if getattr(settings, 'POSTMAN_QUICKREPLY_QUOTE_BODY', False) else None)
     template_name = 'postman/view.html'
@@ -330,6 +330,19 @@ class DisplayMixin(NamespaceMixin, object):
     @login_required_m
     def dispatch(self, *args, **kwargs):
         return super(DisplayMixin, self).dispatch(*args, **kwargs)
+
+    def post(self, request, *args, **kwargs):
+        '''user = request.user
+        self.msgs = Message.objects.thread(user, self.filter)
+        if not self.msgs:
+            raise Http404
+        Message.objects.set_read(user, self.filter)'''
+
+        next_url = _get_referer(request)
+        print(request)
+        print(next_url)
+        return redirect(next_url)
+
 
     def get(self, request, *args, **kwargs):
         user = request.user
@@ -342,13 +355,14 @@ class DisplayMixin(NamespaceMixin, object):
     def get_context_data(self, **kwargs):
         context = super(DisplayMixin, self).get_context_data(**kwargs)
         user = self.request.user
+
         # are all messages archived ?
         for m in self.msgs:
             if not getattr(m, ('sender' if m.sender == user else 'recipient') + '_archived'):
                 archived = False
                 break
-        else:
-            archived = True
+            else:
+                archived = True
         # look for the most recent received message (and non-deleted to comply with the future perms() control), if any
         for m in reversed(self.msgs):
             if m.recipient == user and not m.recipient_deleted_at:
@@ -356,29 +370,82 @@ class DisplayMixin(NamespaceMixin, object):
                 break
         else:
             received = None
-        context.update({
-            'pm_messages': self.msgs,
+        #check for encryption/dectryption (may need to
+        if self.request.method == 'POST':
+            #if it is a post then we know there will be a decryption key
+            cipher = ARC4.new(self.request.POST['dec_key'])
+            msgs_to_dec = self.msgs
+            print(self.request.POST)
+            for msg in msgs_to_dec:
+                msg.body = cipher.decrypt(msg.body)
+                print(msg.body)
+
+            msg_id_req = str(self.request)
+            index = msg_id_req.index('?')
+            msg_id = msg_id_req[index-2]
+            print("This is a Post " + msg_id)
+
+            context.update({
+            'thread_id': msg_id,
+            'encrypted': False,
+            'pm_messages': msgs_to_dec,
             'archived': archived,
             'reply_to_pk': received.pk if received else None,
             'form': self.form_class(initial=received.quote(*self.formatters)) if received else None,
-            'next_url': self.request.GET.get('next') or reverse('postman:inbox', current_app=self.request.resolver_match.namespace),
+            'next_url': self.request.POST.get('next') or reverse('postman:inbox', current_app=self.request.resolver_match.namespace),
         })
+        else:
+
+            print(str(self.request.GET))
+            encrypted = False
+            for msg in self.msgs:
+                if msg.encrypted:
+                    encrypted=True
+
+            msg_id_req = str(self.request)
+            index = msg_id_req.index('?')
+            msg_id = msg_id_req[index-2]
+            print("not a post" + msg_id)
+
+            context.update({
+                'thread_id': msg_id,
+                'encrypted': encrypted,
+                'pm_messages': self.msgs,
+                'archived': archived,
+                'reply_to_pk': received.pk if received else None,
+                'form': self.form_class(initial=received.quote(*self.formatters)) if received else None,
+                'next_url': self.request.GET.get('next') or reverse('postman:inbox', current_app=self.request.resolver_match.namespace),
+            })
         return context
 
+'''For debugging'''
+import logging
+# Get an instance of a logger
+logger = logging.getLogger(__name__)
 
 class MessageView(DisplayMixin, TemplateView):
     """Display one specific message."""
+    def post(self, request, message_id, *args, **kwargs):
+        self.filter = Q(pk=message_id)
+
+        return super(MessageView, self).post(request, *args, **kwargs)
 
     def get(self, request, message_id, *args, **kwargs):
         self.filter = Q(pk=message_id)
+
         return super(MessageView, self).get(request, *args, **kwargs)
 
 
 class ConversationView(DisplayMixin, TemplateView):
     """Display a conversation."""
+    def post(self, request, message_id, *args, **kwargs):
+        self.filter = Q(pk=message_id)
+
+        return super(ConversationView, self).post(request, *args, **kwargs)
 
     def get(self, request, thread_id, *args, **kwargs):
         self.filter = Q(thread=thread_id)
+
         return super(ConversationView, self).get(request, *args, **kwargs)
 
 
@@ -392,7 +459,6 @@ class UpdateMessageMixin(object):
     Optional attributes:
         ``field_value``: the value to set in the field
         ``success_url``: where to redirect to after a successful POST
-
     """
     http_method_names = ['post']
     field_value = None

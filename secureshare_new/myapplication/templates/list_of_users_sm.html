@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+{% extends "my_BASE.html" %}
+
+            {% block title %} Site-Manager {%  endblock %}
+
+  {% block content %}
+    <div class="container">
+        {% csrf_token %}
+        <!--{{lou_form.as_p}}-->
+   <!-- <p>{{ user.username }} is a Site-Manager. Access granted.</p> -->
+   <p> List of Users: </p>
+   {% for user in list %}
+        {{linebreaks}}
+        {% if user.is_active %}
+        <p> {{user.username}}'s account is active.</p>
+        <label for ="is_activated"> Deactivate: </label>
+        <input id= "is_activated" type= "checkbox" name= "is_activated" ></input>
+        
+        {% else %}
+        <p> {{user.username}}'s account has been deactivated.</p>
+        <label for ="is_activated"> Activate: </label>
+        <input id= "is_activated" type= "checkbox" name= "is_activated" ></input>
+        {% endif %}
+   
+   {%endfor%}
+   <br></br>
+   
+   <input type="submit" value="submit">
+   
+    {% endblock %}

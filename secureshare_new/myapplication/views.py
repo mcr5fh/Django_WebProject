@@ -7,9 +7,10 @@ from django.template import RequestContext
 from django.http import HttpResponseRedirect
 from django.core.urlresolvers import reverse
 from django.shortcuts import get_object_or_404
+from django.contrib.auth.models import User
+from myapplication.forms import UserForm, LOUForm
 from django.views.generic.edit import FormView
-
-from myapplication.forms import UserForm
+from myapplication.forms import UserForm, MessageForm
 from myapplication.models import Report
 
 from myapplication.models import Folder
@@ -26,7 +27,7 @@ from myapplication.forms import LoginForm
 from django.contrib.auth.decorators import login_required
 
 from django.contrib.auth import authenticate, login, logout
-
+from django.contrib.auth.models import User
 from django.db.models import Q
 
 # import the logging library
@@ -35,10 +36,27 @@ import logging
 # Get an instance of a logger
 logger = logging.getLogger(__name__)
 
+import os
+from Crypto.Hash import SHA256
+from Crypto.PublicKey import RSA
+from Crypto.Cipher import AES
+from Crypto.Hash import MD5
+from Crypto.Util import Counter
 
 @login_required
 def index(request):
-      return render(request, 'index.html')
+    return render(request, 'index.html')
+
+
+@login_required
+def list_of_users(request):
+    if request.user.is_superuser:
+        lou_form = LOUForm(data=request.POST)
+        list = User.objects.all()
+        return render(request, 'list_of_users_sm.html', {'lou_form':lou_form,'list': list})
+    else:
+        return render(request,'list_of_users.html')
+
 
 @login_required
 def report_new(request):
@@ -60,6 +78,7 @@ def report_new(request):
             #form.Meta.fields = request.user.username
             newReport = form.save(commit=False)
             newReport.username = request.user.username
+
             newReport.save()
 
             #for afile in request.FILES.getlist('files'):
@@ -262,17 +281,6 @@ def register(request):
 
     return render_to_response('register.html', {'user_form': user_form,'registered': registered}, context)
 
-'''
-def logout_view(request):
-    if request.method == 'POST':
-
-         #check to see if the post came from the logout in the reports page
-        if 'logout' in request.POST:
-            logout(request)
-            logger.error('Logging out')
-            login_form = LoginForm('','')
-            return render(request, 'login.html', {'login_form': login_form})
-'''
 
 def login_view(request):
     context = RequestContext(request)
@@ -320,8 +328,53 @@ def login_view(request):
     
     return render_to_response('login.html', {'login_form': login_form,'logged_in': logged_in}, context)
 
+from postman.api import pm_write
+from Crypto.Cipher import ARC4
+
+def send_message(request):
+    if request.method == 'POST':
+        form = MessageForm(request.POST)
+        '''
+         sender = request.user.username
+        recipient = form.recipient
+        subject = form.subject
+        text = form.body
+        should_enc = form.should_enc
+        enc_key = form.enc_key
+
+        '''
+        #validation checking...
+        if form.is_valid():
+            sender = request.user
+            recipient_name = request.POST['recipient']
+            try:
+                recipient = User.objects.get(username=recipient_name)
+            except  User.DoesNotExist:
+                error = "User does not exist.  Please enter a valid username"
+                return render(request, 'new_message.html', {'message_form': form , "error": error})
+
+            subject = request.POST['subject']
+            text = request.POST['body']
+            should_enc = request.POST['should_enc']
+            enc_key = request.POST['enc_key']
+            if enc_key == "":
+                enc_key = "N/A"
+            else:
+                #encrypt
+                cipher = ARC4.new(enc_key)
+                text = str(cipher.encrypt(text))
+                print("ENCRYPTED" + str(text))
+
+            pm_write(sender,recipient,subject, should_enc, body=text)
+            return render(request, 'postman/inbox.html', )
+        else:
+            print("ERROR IN FORM")
 
 
+
+    else:
+        form = MessageForm()
+        return render(request, 'new_message.html', {'message_form': form })
 
 
 

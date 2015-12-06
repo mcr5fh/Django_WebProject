@@ -57,7 +57,7 @@ def pm_broadcast(sender, recipients, subject, body='', skip_notification=False):
             message.notify_users(STATUS_PENDING, _get_site())
 
 
-def pm_write(sender, recipient, subject, body='', skip_notification=False,
+def pm_write(sender, recipient, subject, encrypted, body='', skip_notification=False,
         auto_archive=False, auto_delete=False, auto_moderators=None):
     """
     Write a message to a User.
@@ -72,7 +72,7 @@ def pm_write(sender, recipient, subject, body='', skip_notification=False,
         ``auto_delete``: to mark the message as deleted on the sender side
         ``auto_moderators``: a list of auto-moderation functions
     """
-    message = Message(subject=subject, body=body, sender=sender, recipient=recipient)
+    message = Message(subject=subject, body=body, sender=sender, recipient=recipient, encrypted=encrypted)
     initial_status = message.moderation_status
     if auto_moderators:
         message.auto_moderate(auto_moderators)

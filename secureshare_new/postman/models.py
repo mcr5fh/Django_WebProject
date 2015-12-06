@@ -265,6 +265,8 @@ class Message(models.Model):
     """
     A message between a User and another User or an AnonymousUser.
     """
+    #ADDED BY MATT:
+    encrypted = models.BooleanField(_("enc"), default=False)
 
     SUBJECT_MAX_LENGTH = 120
 
