@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+{% extends "my_BASE.html" %}
+
+		{% block title %} New Message {%  endblock %}
+
+
+  {% block content %}
+
+      {% if error %}
+         <div class="alert alert-danger" role="alert">
+            <strong>{{ error }}</strong>
+          </div>
+      {% endif %}
+     <form method="post"> {% csrf_token %}
+
+       {#   This is for not showing the encryption key field: for boundfield in form: #}
+         {#   if boundfield != enc_key #}
+
+        {{ message_form.as_p }}
+
+
+         <input type="submit" value="Send">
+
+
+    </form>
+
+  {% endblock %}

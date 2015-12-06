@@ -10,8 +10,13 @@
       <p>{{ user.username }} is logged in.</p>
         </br>
         <ul>
-            <li><a href = "{% url 'list' %}">List of Reports</a> </li>
-            <li><a href = "{% url 'report' %}">Create a New Report</a> </li>
+            <li>
+                <a href = "{% url 'list' %}">List of Reports</a>
+            </li>
+            <li>
+                <a href = "{% url 'report' %}">Create a New Report</a>
+
+            </li>
             <li>Messaging</li>
            {% block postman_menu %}
                 <ul id="postman_menu">
@@ -26,11 +31,12 @@
         </ul>
         </br>
        
-            <form action="{% url "login" %}" method="post" enctype="multipart/form-data">{% csrf_token %}
-        		<input type="hidden" name='logout' value="False" />
-        		<input type='submit' value='Logout' />
-            
-            </form>
+
         </div>
+
+        <form action="{% url "login" %}" method="post" enctype="multipart/form-data">{% csrf_token %}
+			<input type="hidden" name='logout' value="False" />
+			<input type='submit' value='Logout' />
+        </form>
 
     {% endblock %}

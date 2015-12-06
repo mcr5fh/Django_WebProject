@@ -35,7 +35,8 @@ INSTALLED_APPS = (
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'myapplication',
-    'postman'
+    'postman',
+    #'multiupload'
 )
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 POSTMAN_AUTO_MODERATE_AS = True
