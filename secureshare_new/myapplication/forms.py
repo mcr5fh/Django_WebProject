@@ -34,6 +34,25 @@ class ReportForm(forms.ModelForm):
 #            Attachment.objects.create(file=each, report=instance)
 
 #        return instance
+
+# want to use pm_write(sender, recipient, subject, body='', skip_notification=False,
+#         auto_archive=False, auto_delete=False, auto_moderators=None):
+
+class MessageForm(forms.Form):
+    recipient = forms.CharField(label = "Recipient", max_length = 100)
+    subject = forms.CharField(label = "Subject", max_length = 100)
+    body = forms.CharField(label = "Message",widget=forms.Textarea)
+    should_enc = forms.BooleanField(label="Encrypt: ")
+    enc_key = forms.CharField(label = "Encryption Key: ", max_length = 100)
+
+    class Meta:
+        fields = ['sender',
+        'recipient' ,
+        'subject' ,
+        'body',
+        'should_enc',
+        'enc_key']
+
 '''
 class Report_FolderForm(forms.ModelForm):
 

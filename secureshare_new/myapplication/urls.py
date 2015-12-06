@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 from django.conf.urls import patterns, url
+from postman.views import WriteView
 
 urlpatterns = patterns('myapplication.views',
     url(r'^index/$', 'index', name='index'),
@@ -10,6 +11,8 @@ urlpatterns = patterns('myapplication.views',
     url(r'^report/$', 'report_new', name ='report'),
    # url(r'^report_folder/$', 'report_folder_new', name ='report_folder'),
     #TODO: Report folder edit
+    url(r'^write/$', 'send_message', name='send_m'),
+
     url(r'^report/(?P<pk>[0-9]+)/edit/$', 'report_edit', name='report_edit'),
     url(r'^manage/$', 'manage', name='manage'),
     url(r'^folder_new/$', 'folder_new', name='folder_new'),
