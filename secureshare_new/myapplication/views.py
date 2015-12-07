@@ -337,7 +337,6 @@ def login_view(request):
 from postman.api import pm_write
 from Crypto.Cipher import ARC4
 
-@login_required
 def send_message(request):
     if request.method == 'POST':
         form = MessageForm(request.POST)
@@ -383,13 +382,11 @@ def send_message(request):
         form = MessageForm()
         return render(request, 'new_message.html', {'message_form': form })
 
-@login_required
 def normalize_query(query_string,
                     findterms=re.compile(r'"([^"]+)"|(\S+)').findall,
                     normspace=re.compile(r'\s{2,}').sub):
     return [normspace(' ', (t[0] or t[1]).strip()) for t in findterms(query_string)]
 
-@login_required
 def get_query(query_string, search_fields):
     ''' Returns a query, that is a combination of Q objects. That combination
         aims to search keywords within a model by testing the given search fields.
@@ -411,7 +408,6 @@ def get_query(query_string, search_fields):
             query = query & or_query
     return query
 
-@login_required
 def search(request):
     query_string = ''
     found_entries = None
@@ -435,9 +431,12 @@ def search(request):
 
         query_string = request.GET['q']
 
-        entry_query = get_query(query_string, search_fields)
+        if len(search_fields) != 0:
+            entry_query = get_query(query_string, search_fields)
+            found_entries = Report.objects.filter(Q(username=request.user.username)).filter(entry_query).order_by('timestamp')
 
-        found_entries = Report.objects.filter(Q(username=request.user.username)).filter(entry_query).order_by('timestamp')
+        else:
+            found_entries = None
 
         begin = request.GET['begin']
         end = request.GET['end']
@@ -473,6 +472,7 @@ def search(request):
             pass
         else:
             found_entries = found_entries.filter(visibility=visibilityGet)
+
 
     return render_to_response('search.html',
                           { 'query_string': query_string, 'found_entries': found_entries, 'bad_date': badDate },
