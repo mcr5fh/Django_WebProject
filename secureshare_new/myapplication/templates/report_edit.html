@@ -10,6 +10,6 @@
             <form action="{% url "report_edit" pk=report.pk %}" method="post" enctype="multipart/form-data">
                 {% csrf_token %}
                 {{ form.as_p }}
-                <p><input type="submit" value="Upload" /></p>
+                <p><input type="submit" value="Update" /></p>
             </form>
         {% endblock %}

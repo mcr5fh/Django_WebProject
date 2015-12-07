@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import os
+import re
 from datetime import datetime
 from django.shortcuts import render
 from django.shortcuts import render_to_response
@@ -170,8 +171,13 @@ def report_edit(request, pk):
 
 @login_required
 def manage(request):
-    reports = Report.objects.all()
-    folders = Folder.objects.all()
+    if request.user.is_superuser:
+        reports = Report.objects.all()
+        folders = Folder.objects.all()
+    else:
+        reports = Report.objects.filter(Q(username=request.user.username) | Q(visibility="public"))
+        folders = Report.objects.filter(Q(username=request.user.username))
+
 
     # Render manage page with user reports and folders
     return render_to_response(
@@ -331,6 +337,7 @@ def login_view(request):
 from postman.api import pm_write
 from Crypto.Cipher import ARC4
 
+@login_required
 def send_message(request):
     if request.method == 'POST':
         form = MessageForm(request.POST)
@@ -376,7 +383,99 @@ def send_message(request):
         form = MessageForm()
         return render(request, 'new_message.html', {'message_form': form })
 
+@login_required
+def normalize_query(query_string,
+                    findterms=re.compile(r'"([^"]+)"|(\S+)').findall,
+                    normspace=re.compile(r'\s{2,}').sub):
+    return [normspace(' ', (t[0] or t[1]).strip()) for t in findterms(query_string)]
 
+@login_required
+def get_query(query_string, search_fields):
+    ''' Returns a query, that is a combination of Q objects. That combination
+        aims to search keywords within a model by testing the given search fields.
 
+    '''
+    query = None # Query to search for every search term
+    terms = normalize_query(query_string)
+    for term in terms:
+        or_query = None # Query to search for a given term in each field
+        for field_name in search_fields:
+            q = Q(**{"%s__icontains" % field_name: term})
+            if or_query is None:
+                or_query = q
+            else:
+                or_query = or_query | q
+        if query is None:
+            query = or_query
+        else:
+            query = query & or_query
+    return query
+
+@login_required
+def search(request):
+    query_string = ''
+    found_entries = None
+    badDate = False
+
+    if ('q' in request.GET) and request.GET['q'].strip():
+        search_fields = []
+
+        if ('uploadedby' in request.GET):
+            search_fields.append('username')
+        if ('short' in request.GET):
+            search_fields.append('short')
+        if ('description' in request.GET):
+            search_fields.append('detailed')
+        if ('files' in request.GET):
+            search_fields.append('file1')
+            search_fields.append('file2')
+            search_fields.append('file3')
+            search_fields.append('file4')
+            search_fields.append('file5')
+
+        query_string = request.GET['q']
+
+        entry_query = get_query(query_string, search_fields)
+
+        found_entries = Report.objects.filter(Q(username=request.user.username)).filter(entry_query).order_by('timestamp')
+
+        begin = request.GET['begin']
+        end = request.GET['end']
+
+        beginMatch = re.match('\d{4}-\d{2}-\d{2}', begin)
+        endMatch = re.match('\d{4}-\d{2}-\d{2}', end)
+        if beginMatch and endMatch:
+            found_entries = found_entries.filter(timestamp__range=[begin,end])
+            badDate = False
+        else:
+            badDate = True
+
+        visibilityGet = request.GET['visibility']
+        if (visibilityGet == "all"):
+            pass
+        else:
+            found_entries = found_entries.filter(visibility=visibilityGet)
+    else:
+        found_entries = Report.objects.filter(Q(username=request.user.username)).order_by('timestamp')
+        begin = request.GET['begin']
+        end = request.GET['end']
+
+        beginMatch = re.match('\d{4}-\d{2}-\d{2}', begin)
+        endMatch = re.match('\d{4}-\d{2}-\d{2}', end)
+        if beginMatch and endMatch:
+            found_entries = found_entries.filter(timestamp__range=[begin,end])
+            badDate = False
+        else:
+            badDate = True
+
+        visibilityGet = request.GET['visibility']
+        if (visibilityGet == "all"):
+            pass
+        else:
+            found_entries = found_entries.filter(visibility=visibilityGet)
+
+    return render_to_response('search.html',
+                          { 'query_string': query_string, 'found_entries': found_entries, 'bad_date': badDate },
+                          context_instance=RequestContext(request))
 
 

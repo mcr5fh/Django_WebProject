@@ -19,6 +19,7 @@ urlpatterns = patterns('myapplication.views',
     url(r'^folder_delete/$', 'folder_delete', name='folder_delete'),
     url(r'^move_report/$', 'move_report', name='move_report'),
     url(r'^remove_report/$', 'remove_report', name='remove_report'),
+    url(r'^search/$', 'search', name='search'),
     #url(r'^login/$', 'auth_login', name ='login'),
 )
 
