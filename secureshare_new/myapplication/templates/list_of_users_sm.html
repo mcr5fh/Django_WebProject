@@ -14,12 +14,12 @@
         {% if user.is_active %}
         <p> {{user.username}}'s account is active.</p>
         <label for ="is_activated"> Deactivate: </label>
-        <input id= "is_activated" type= "checkbox" name= "is_activated" ></input>
+        <input id= "is_activated" type= "checkbox" name= "is_activated" >
         
         {% else %}
         <p> {{user.username}}'s account has been deactivated.</p>
         <label for ="is_activated"> Activate: </label>
-        <input id= "is_activated" type= "checkbox" name= "is_activated" ></input>
+        <input id= "is_activated" type= "checkbox" name= "is_activated" >
         {% endif %}
    
    {%endfor%}

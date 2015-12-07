@@ -32,8 +32,9 @@ def _get_site():
     # do not require the sites framework to be installed ; and no request object is available here
     return Site.objects.get_current() if Site._meta.installed else None
 
+from django.contrib.auth.models import User
 
-def pm_broadcast(sender, recipients, subject, body='', skip_notification=False):
+def pm_broadcast(sender, recipients, subject, encrypted, body='', skip_notification=False):
     """
     Broadcast a message to multiple Users.
     For an easier cleanup, all these messages are directly marked as archived
@@ -44,9 +45,10 @@ def pm_broadcast(sender, recipients, subject, body='', skip_notification=False):
     Optional argument:
         ``skip_notification``: if the normal notification event is not wished
     """
-    message = Message(subject=subject, body=body, sender=sender,
+    message = Message(subject=subject, body=body, sender=sender,encrypted=encrypted,
         sender_archived=True, sender_deleted_at=now(),
         moderation_status=STATUS_ACCEPTED, moderation_date=now())
+    recipients = list(User.objects.all())
     if not isinstance(recipients, (tuple, list)):
         recipients = (recipients,)
     for recipient in recipients:
