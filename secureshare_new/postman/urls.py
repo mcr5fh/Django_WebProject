@@ -99,13 +99,14 @@ from .views import (InboxView, SentView, ArchivesView, TrashView,
         WriteView, ReplyView, MessageView, ConversationView,
         ArchiveView, DeleteView, UndeleteView)
 
+from myapplication.views import send_message
+
 
 urlpatterns = patterns('',
     url(r'^inbox/(?:(?P<option>'+OPTIONS+')/)?$', InboxView.as_view(), name='inbox'),
     url(r'^sent/(?:(?P<option>'+OPTIONS+')/)?$', SentView.as_view(), name='sent'),
     url(r'^archives/(?:(?P<option>'+OPTIONS+')/)?$', ArchivesView.as_view(), name='archives'),
     url(r'^trash/(?:(?P<option>'+OPTIONS+')/)?$', TrashView.as_view(), name='trash'),
-    url(r'^write/(?:(?P<recipients>[^/#]+)/)?$', WriteView.as_view(), name='write'),
     url(r'^reply/(?P<message_id>[\d]+)/$', ReplyView.as_view(), name='reply'),
     url(r'^view/(?P<message_id>[\d]+)/$', MessageView.as_view(), name='view'),
     url(r'^view/t/(?P<thread_id>[\d]+)/$', ConversationView.as_view(), name='view_conversation'),

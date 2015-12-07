@@ -1,0 +1,21 @@
+{% extends "postman/base.html" %}
+{% load i18n %}{% load postman_tags %}
+{% block content %}
+
+
+    <form action="
+            {% url 'postman:view' message_id %}
+                   "
+          method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+
+                <label for="dec_key">Enter Decryption Key: </label>
+                <input type="text" id="dec_key" name="dec_key">
+                <br/>
+                <input type="hidden" id="next" value="{{ next_url }}">
+                <input type="hidden" id="convers" value="{{ convers }}">
+                <p><input type="submit" value="Decrypt" /></p>
+    </form>
+
+
+{% endblock %}

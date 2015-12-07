@@ -311,7 +311,14 @@ class ReplyView(ComposeMixin, FormView):
         context['recipient'] = self.parent.obfuscated_sender
         return context
 
-from Crypto.Cipher import ARC4
+
+from django.shortcuts import render, render_to_response
+from django.template import RequestContext
+from Crypto.Cipher import AES
+from Crypto.Hash import SHA256
+from Crypto.Util import Counter
+from itertools import chain
+
 class DisplayMixin(NamespaceMixin, object):
     """
     Code common to the by-message and by-conversation views.
@@ -332,16 +339,20 @@ class DisplayMixin(NamespaceMixin, object):
         return super(DisplayMixin, self).dispatch(*args, **kwargs)
 
     def post(self, request, *args, **kwargs):
-        '''user = request.user
+        user = request.user
         self.msgs = Message.objects.thread(user, self.filter)
         if not self.msgs:
             raise Http404
-        Message.objects.set_read(user, self.filter)'''
+        Message.objects.set_read(user, self.filter)
 
         next_url = _get_referer(request)
-        print(request)
-        print(next_url)
-        return redirect(next_url)
+        #print("NEXT URL"+ next_url )
+        form = self.form_class(request.POST)
+
+        #print("invalid" + str(request))
+        return render_to_response(self.template_name, self.get_context_data(),
+                                  context_instance=RequestContext(request))
+
 
 
     def get(self, request, *args, **kwargs):
@@ -353,6 +364,7 @@ class DisplayMixin(NamespaceMixin, object):
         return super(DisplayMixin, self).get(request, *args, **kwargs)
 
     def get_context_data(self, **kwargs):
+        self.template_name = 'postman/view.html'
         context = super(DisplayMixin, self).get_context_data(**kwargs)
         user = self.request.user
 
@@ -372,43 +384,84 @@ class DisplayMixin(NamespaceMixin, object):
             received = None
         #check for encryption/dectryption (may need to
         if self.request.method == 'POST':
-            #if it is a post then we know there will be a decryption key
-            cipher = ARC4.new(self.request.POST['dec_key'])
-            msgs_to_dec = self.msgs
-            print(self.request.POST)
-            for msg in msgs_to_dec:
-                msg.body = cipher.decrypt(msg.body)
-                print(msg.body)
+            if self.request.POST['convers']:
+                #if it is a post then we know there will be a decryption key
+                dec_key = self.request.POST['dec_key']
+                hash_pw = SHA256.new(str.encode(dec_key))
 
-            msg_id_req = str(self.request)
-            index = msg_id_req.index('?')
-            msg_id = msg_id_req[index-2]
-            print("This is a Post " + msg_id)
+                sym_key = hash_pw.digest()
+                if len(sym_key) >= 16:
+                    if(len(sym_key) < 24 ):
+                        sym_key = sym_key[0:16]
+                    elif len(sym_key) < 32:
+                        sym_key = sym_key[0:24]
+                    elif len(sym_key) > 32:
+                        sym_key = sym_key[0:32]
 
-            context.update({
-            'thread_id': msg_id,
-            'encrypted': False,
-            'pm_messages': msgs_to_dec,
-            'archived': archived,
-            'reply_to_pk': received.pk if received else None,
-            'form': self.form_class(initial=received.quote(*self.formatters)) if received else None,
-            'next_url': self.request.POST.get('next') or reverse('postman:inbox', current_app=self.request.resolver_match.namespace),
-        })
+                msgs_to_dec = self.msgs
+                reply =False
+
+
+                for msg in msgs_to_dec:
+                    if msg.thread:
+                        #print("THREAD" + str(len(self.msgs)) + " A" + str(len(msgs_to_dec)))
+                        reply = True
+                    encryption_suite = AES.new(sym_key, AES.MODE_CTR, b"", Counter.new(128))
+                    msg.body = encryption_suite.decrypt(msg.body)
+                    # msg.body = str(cipher.decrypt(str.encode(msg.body)))
+                    #print("message body:  " + str(msg.body))
+
+
+
+                msg_id_req = str(self.request)
+
+                if reply:
+                    msg_id = msg_id_req[len(msg_id_req)-4]
+                else:
+                    msg_id = msg_id_req[len(msg_id_req)-4]
+
+                # if reply:
+                #     msgs_to_dec = chain(Message.objects.filter(self.filter, Q(id!=msg_id)))
+
+                context.update({
+                    #'reply': reply,
+                    'message_id': msg_id,
+                    'encrypted': False,
+                    'pm_messages': msgs_to_dec,
+                    'archived': archived,
+                    'reply_to_pk': received.pk if received else None,
+                    'form': self.form_class(initial=received.quote(*self.formatters)) if received else None,
+                    'next_url': self.request.POST.get('next') or reverse('postman:inbox', current_app=self.request.resolver_match.namespace),
+                })
+                return context
         else:
 
-            print(str(self.request.GET))
+            #print(str(self.request.GET))
             encrypted = False
             for msg in self.msgs:
                 if msg.encrypted:
                     encrypted=True
+                if msg.thread:
+                    reply = True
+
+            if encrypted:
+                self.template_name = 'postman/decrypt_key.html'
 
             msg_id_req = str(self.request)
-            index = msg_id_req.index('?')
-            msg_id = msg_id_req[index-2]
-            print("not a post" + msg_id)
+
+            conversation =False
+            if len(self.msgs) >1:
+                conversation = True
+            try:
+                index = msg_id_req.index('?')
+                msg_id = msg_id_req[index-2]
+            except:
+                msg_id = msg_id_req[len(msg_id_req)-4]
 
             context.update({
-                'thread_id': msg_id,
+                'convers': conversation,
+                #'reply': reply,
+                'message_id': msg_id,
                 'encrypted': encrypted,
                 'pm_messages': self.msgs,
                 'archived': archived,
@@ -438,14 +491,13 @@ class MessageView(DisplayMixin, TemplateView):
 
 class ConversationView(DisplayMixin, TemplateView):
     """Display a conversation."""
-    def post(self, request, message_id, *args, **kwargs):
-        self.filter = Q(pk=message_id)
+    def post(self, request, thread_id, *args, **kwargs):
+        self.filter = Q(pk=thread_id)
 
         return super(ConversationView, self).post(request, *args, **kwargs)
 
     def get(self, request, thread_id, *args, **kwargs):
         self.filter = Q(thread=thread_id)
-
         return super(ConversationView, self).get(request, *args, **kwargs)
 
 

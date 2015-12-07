@@ -44,19 +44,39 @@ class ReportForm(forms.ModelForm):
 # want to use pm_write(sender, recipient, subject, body='', skip_notification=False,
 #         auto_archive=False, auto_delete=False, auto_moderators=None):
 
-class MessageForm(forms.Form):
-    recipient = forms.CharField(label = "Recipient", max_length = 100)
+from postman.models import Message
+
+class BroadcastForm(forms.Form):
     subject = forms.CharField(label = "Subject", max_length = 100)
     body = forms.CharField(label = "Message",widget=forms.Textarea)
-    should_enc = forms.BooleanField(label="Encrypt: ")
-    enc_key = forms.CharField(label = "Encryption Key: ", max_length = 100)
+    encrypted = forms.BooleanField(label="Encrypt: ", required=False)
+    enc_key = forms.CharField(label = "Encryption Key: ", max_length = 100, required=False)
 
     class Meta:
+        model = Message
         fields = ['sender',
         'recipient' ,
         'subject' ,
         'body',
-        'should_enc',
+        'encrypted',
+        'enc_key']
+
+
+class MessageForm(forms.Form):
+
+    recipient = forms.CharField(label = "Recipient", max_length = 100)
+    subject = forms.CharField(label = "Subject", max_length = 100)
+    body = forms.CharField(label = "Message",widget=forms.Textarea)
+    encrypted = forms.BooleanField(label="Encrypt: ", required=False)
+    enc_key = forms.CharField(label = "Encryption Key: ", max_length = 100, required=False)
+
+    class Meta:
+        model = Message
+        fields = ['sender',
+        'recipient' ,
+        'subject' ,
+        'body',
+        'encrypted',
         'enc_key']
 
 '''
