@@ -9,9 +9,6 @@
   -khtml-user-drag: element;
   -webkit-user-drag: element;
 }
-* {
-  margin: 0;
-}
 
 .report {
   min-height: 150px;

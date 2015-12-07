@@ -346,10 +346,10 @@ class DisplayMixin(NamespaceMixin, object):
         Message.objects.set_read(user, self.filter)
 
         next_url = _get_referer(request)
-        print("NEXT URL"+ next_url )
+        #print("NEXT URL"+ next_url )
         form = self.form_class(request.POST)
 
-        print("invalid" + str(request))
+        #print("invalid" + str(request))
         return render_to_response(self.template_name, self.get_context_data(),
                                   context_instance=RequestContext(request))
 
@@ -404,12 +404,12 @@ class DisplayMixin(NamespaceMixin, object):
 
                 for msg in msgs_to_dec:
                     if msg.thread:
-                        print("THREAD" + str(len(self.msgs)) + " A" + str(len(msgs_to_dec)))
+                        #print("THREAD" + str(len(self.msgs)) + " A" + str(len(msgs_to_dec)))
                         reply = True
                     encryption_suite = AES.new(sym_key, AES.MODE_CTR, b"", Counter.new(128))
                     msg.body = encryption_suite.decrypt(msg.body)
                     # msg.body = str(cipher.decrypt(str.encode(msg.body)))
-                    print("message body:  " + str(msg.body))
+                    #print("message body:  " + str(msg.body))
 
 
 
@@ -436,7 +436,7 @@ class DisplayMixin(NamespaceMixin, object):
                 return context
         else:
 
-            print(str(self.request.GET))
+            #print(str(self.request.GET))
             encrypted = False
             for msg in self.msgs:
                 if msg.encrypted:
