@@ -173,10 +173,9 @@ def report_edit(request, pk):
 def manage(request):
     if request.user.is_superuser:
         reports = Report.objects.all()
-        folders = Folder.objects.all()
     else:
-        reports = Report.objects.filter(Q(username=request.user.username) | Q(visibility="public"))
-        folders = Report.objects.filter(Q(username=request.user.username))
+        reports = Report.objects.filter(Q(username=request.user.username))
+    folders = Folder.objects.filter(Q(username=request.user.username))
 
 
     # Render manage page with user reports and folders
@@ -192,6 +191,7 @@ def folder_new(request):
     if request.method == 'POST':
         fname = request.POST.get("name", "")
         f = Folder(name=fname)
+        f.username = request.user.username
         f.save()
     return HttpResponseRedirect(reverse('myapplication.views.manage'))
 
@@ -433,7 +433,10 @@ def search(request):
 
         if len(search_fields) != 0:
             entry_query = get_query(query_string, search_fields)
-            found_entries = Report.objects.filter(Q(username=request.user.username)).filter(entry_query).order_by('timestamp')
+            if request.user.is_superuser:
+                found_entries = Report.objects.all()
+            else:
+                found_entries = Report.objects.filter(Q(username=request.user.username) | Q(visibility="public")).filter(entry_query).order_by('timestamp')
 
         else:
             found_entries = None
@@ -455,7 +458,10 @@ def search(request):
         else:
             found_entries = found_entries.filter(visibility=visibilityGet)
     else:
-        found_entries = Report.objects.filter(Q(username=request.user.username)).order_by('timestamp')
+        if request.user.is_superuser:
+            found_entries = Report.objects.all()
+        else:
+            found_entries = Report.objects.filter(Q(username=request.user.username) | Q(visibility="public")).order_by('timestamp')
         begin = request.GET['begin']
         end = request.GET['end']
 
