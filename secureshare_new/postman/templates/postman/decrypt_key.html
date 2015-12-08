@@ -2,10 +2,14 @@
 {% load i18n %}{% load postman_tags %}
 {% block content %}
 
-
-    <form action="
+{% if wrong_key %}
+    <div class="alert alert-danger" role="alert">
+            <strong>Invalid key.</strong> Please enter the correct decryption key.
+         </div>
+{% endif %}
+    <form action="{% if wrong_key %} decrypt_key.html {% else %}
             {% url 'postman:view' message_id %}
-                   "
+                   {% endif %}"
           method="post" enctype="multipart/form-data">
                 {% csrf_token %}
 
@@ -13,7 +17,7 @@
                 <input type="text" id="dec_key" name="dec_key">
                 <br/>
                 <input type="hidden" id="next" value="{{ next_url }}">
-                <input type="hidden" id="convers" value="{{ convers }}">
+                <input type="hidden" id="wrong_key" value="{{ wrong_key }}">
                 <p><input type="submit" value="Decrypt" /></p>
     </form>
 

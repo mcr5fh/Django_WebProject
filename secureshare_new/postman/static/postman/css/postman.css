@@ -8,6 +8,7 @@
 }
 .pm_message.pm_deleted .pm_body{
  display: none;
+ font-size: 16px;
 }
 .pm_message.pm_archived {
  font-style: italic;

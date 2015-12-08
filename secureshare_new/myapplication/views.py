@@ -8,8 +8,8 @@ from django.template import RequestContext
 from django.http import HttpResponseRedirect
 from django.core.urlresolvers import reverse
 from django.shortcuts import get_object_or_404
-from django.contrib.auth.models import User
-from myapplication.forms import UserForm, LOUForm
+from django.contrib.auth.models import User, Group
+from myapplication.forms import UserForm, LOUForm, DeactivateForm, SuperUserForm,DisableSuperUserForm, CreateGroupForm, AddUserToGroupForm
 from django.views.generic.edit import FormView
 from myapplication.forms import UserForm, MessageForm, BroadcastForm
 from myapplication.models import Report
@@ -49,6 +49,69 @@ from Crypto.Util import Counter
 @login_required
 def index(request):
     return render(request, 'index.html')
+
+@login_required
+def deactivate(request):
+    if request.user.is_superuser:
+        deactivated = False
+        if request.method == 'POST':
+            deactivate_form = DeactivateForm(data=request.POST)
+            if deactivate_form.is_valid():
+                deactivate_name = request.POST['user_to_deactivate']
+                user = User.objects.get(username=deactivate_name)
+                user.is_active = False
+                user.save()
+                deactivated = True
+            else:
+                deactivate_form = DeactivateForm()
+        else:
+            deactivate_form = DeactivateForm()
+        return render(request,'deactivate.html',{'deactivate_form': deactivate_form, 'deactivated':deactivated})
+    else:
+        return render(request,'list_of_users.html')
+
+
+@login_required
+def make_super_user(request):
+    if request.user.is_superuser:
+        made_super_user = False
+        if request.method == 'POST':
+            super_user_form = SuperUserForm(data=request.POST)
+            if super_user_form.is_valid():
+                superuser_name = request.POST['super_user']
+                user = User.objects.get(username=superuser_name)
+                user.is_superuser = True
+                user.save()
+                made_super_user
+            else:
+                super_user_form = SuperUserForm()
+        else:
+            super_user_form = SuperUserForm()
+        return render(request, 'make_super_user.html', {'super_user_form':super_user_form, 'made_super_user':made_super_user})
+    else:
+        return render(request,'list_of_users.html')
+
+
+@login_required
+def disable_super_user(request):
+    if request.user.is_superuser:
+        disabled_super_user = False
+        if request.method == 'POST':
+            disable_super_user_form = DisableSuperUserForm(data=request.POST)
+            if disable_super_user_form.is_valid():
+                superuser_name = request.POST['disable_super_user']
+                user = User.objects.get(username=superuser_name)
+                user.is_superuser = False
+                user.save()
+                disabled_super_user = True
+            else:
+                disable_super_user_form = DisableSuperUserForm()
+        else:
+            disable_super_user_form = DisableSuperUserForm()
+        return render(request, 'disable_super_user.html', {'disable_super_user_form':disable_super_user_form, 'disabled_super_user':disabled_super_user})
+    else:
+        return render(request,'list_of_users.html')
+
 
 
 @login_required
@@ -130,12 +193,65 @@ def remove_user(request):
 @login_required
 def list_of_users(request):
     if request.user.is_superuser:
-        lou_form = LOUForm(data=request.POST)
-        list = User.objects.all()
-        return render(request, 'list_of_users_sm.html', {'lou_form': lou_form, 'list': list})
+        activated = False
+        if request.method == 'POST':
+            lou_form = LOUForm(data=request.POST)
+            if lou_form.is_valid():
+                activate_name = request.POST['user_to_activate']
+                user = User.objects.get(username=activate_name)
+                user.is_active = True
+                user.save()
+                activated = True
+            else:
+                lou_form = LOUForm()
+        else:
+            lou_form = LOUForm()
+        return render(request, 'list_of_users_sm.html', {'lou_form':lou_form, 'activated':activated})
     else:
         return render(request, 'list_of_users.html')
 
+
+
+@login_required
+def edit_groups(request):
+    if request.user.is_superuser:
+        return render(request,'edit_groups.html')
+    else:
+        return render(request, 'list_of_users.html')
+
+
+@login_required
+def create_group(request):
+    created = False
+    if request.method == 'POST':
+        new_group_form = CreateGroupForm(data = request.POST)
+        if new_group_form.is_valid():
+            group_name = request.POST['group_form']
+            newgroup = Group.objects.create(name=group_name)
+            created = True
+    else:
+        new_group_form = CreateGroupForm()
+
+    return render(request, 'create_group.html', {'new_group_form':new_group_form, 'created':created})
+
+
+
+@login_required
+def add_to_group(request):
+    added = False
+    if request.method == 'POST':
+        add_user_form = AddUserToGroupForm(data = request.POST)
+        if add_user_form.is_valid:
+            user_name = request.POST['add_user']
+            add_to = request.POST['add_to_group']
+            user = User.objects.get(username = user_name)
+            g = Group.objects.get(name=add_to)
+            #g.user_set.add(user_name)
+            user.groups.add(g)
+            added = True
+    else:
+        add_user_form = AddUserToGroupForm()
+    return render(request, 'add_to_group.html', {'add_user_form':add_user_form, 'added':added})
 
 @login_required
 def report_new(request):
@@ -358,7 +474,9 @@ def remove_report(request):
     return HttpResponseRedirect(reverse('myapplication.views.manage'))
 
 
-# NOTE: if user already exists then it jsut resets
+
+
+#NOTE: if user already exists then it jsut resets
 def register(request):
     context = RequestContext(request)
     # a boolean value for telling the template whether the registration was successful. Set to False originally, code changes to True when registration succeeds.
@@ -445,6 +563,8 @@ def login_view(request):
 
 
 from postman.api import pm_write, pm_broadcast
+from secureshare.settings import COUNTER
+
 
 
 def send_broadcast(request):
@@ -459,23 +579,18 @@ def send_broadcast(request):
             text = request.POST['body']
             encrypted = request.POST.get('encrypted', False)
             enc_key = request.POST['enc_key']
+            raw_b = b""
+
             if enc_key == "":
                 enc_key = "N/A"
             else:
-                # encrypt
-                hash_pw = SHA256.new(str.encode(enc_key))
-                sym_key = hash_pw.digest()
-                if len(sym_key) >= 16:
-                    if (len(sym_key) < 24):
-                        sym_key = sym_key[0:16]
-                    elif len(sym_key) < 32:
-                        sym_key = sym_key[0:24]
-                    elif len(sym_key) > 32:
-                        sym_key = sym_key[0:32]
-                encryption_suite = AES.new(sym_key, AES.MODE_CTR, b"", Counter.new(128))
-                text = encryption_suite.encrypt(text)
 
-            pm_broadcast(sender, "", subject, encrypted, body=text)
+                #encrypt
+                #encrypt
+                raw_b = encrypt(enc_key, text)
+                text=str(raw_b)
+
+            pm_broadcast(sender,"", subject, encrypted, raw=raw_b, body=text)
             return render(request, 'postman/inbox.html', )
         else:
             return render(request, 'broadcast.html', {'message_form': form})
@@ -485,6 +600,7 @@ def send_broadcast(request):
         form = BroadcastForm()
         return render(request, 'broadcast.html', {'message_form': form})
 
+from simplecrypt import encrypt, decrypt
 
 def send_message(request):
     if request.method == 'POST':
@@ -504,26 +620,20 @@ def send_message(request):
             text = request.POST['body']
             encrypted = request.POST.get('encrypted', False)
             enc_key = request.POST['enc_key']
+            raw_b = b""
             if enc_key == "":
                 enc_key = "N/A"
             else:
-                # encrypt
-                hash_pw = SHA256.new(str.encode(enc_key))
-                sym_key = hash_pw.digest()
-                if len(sym_key) >= 16:
-                    if (len(sym_key) < 24):
-                        sym_key = sym_key[0:16]
-                    elif len(sym_key) < 32:
-                        sym_key = sym_key[0:24]
-                    elif len(sym_key) > 32:
-                        sym_key = sym_key[0:32]
-                encryption_suite = AES.new(sym_key, AES.MODE_CTR, b"", Counter.new(128))
-                text = encryption_suite.encrypt(text)
+                #encrypt
+                raw_b = encrypt(enc_key, text)
+                text=str(raw_b)
 
-            pm_write(sender, recipient, subject, encrypted, body=text)
+
+            pm_write(sender,recipient,subject, encrypted, raw=raw_b, body=text)
             return render(request, 'postman/inbox.html', )
         else:
-            return render(request, 'new_message.html', {'message_form': form})
+            # print("invalid form")
+            return render(request, 'new_message.html', {'message_form': form })
 
 
     else:

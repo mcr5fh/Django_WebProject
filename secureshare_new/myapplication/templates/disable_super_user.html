@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+{% extends "my_BASE.html" %}
+
+            {% block title %} Disable SuperUser {%  endblock %}
+
+  {% block content %}
+    {%if disabled_super_user%}
+    <p>The account is no longer a superuser. This <a href='../index'> link </a> will take you back to the home page, or go <a href='../login'> here</a> for the login page.</p>
+
+    {% else %}
+    <div class="container">
+        <form method="post">{% csrf_token %}
+        {{disable_super_user_form.as_p}}
+        <input type='submit' value='Are you sure?' />
+        </form>
+        {% endif %}
+    {% endblock %}

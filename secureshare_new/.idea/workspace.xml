@@ -22,11 +22,19 @@
   </component>
   <component name="FileEditorManager">
     <leaf>
+<<<<<<< HEAD
       <file leaf-file-name="views.py" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/myapplication/views.py">
           <provider selected="true" editor-type-id="text-editor">
             <state vertical-scroll-proportion="0.7326733">
               <caret line="192" column="24" selection-start-line="192" selection-start-column="24" selection-end-line="192" selection-end-column="24" />
+=======
+<<<<<<< HEAD
+      <file leaf-file-name="views.py" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/myapplication/views.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="-11.6875">
+              <caret line="22" column="27" selection-start-line="22" selection-start-column="27" selection-end-line="22" selection-end-column="27" />
               <folding>
                 <element signature="e#24#33#0" expanded="true" />
               </folding>
@@ -34,8 +42,50 @@
           </provider>
         </entry>
       </file>
+      <file leaf-file-name="manage.html" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/myapplication/templates/manage.html">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="77.88461">
+              <caret line="17" column="15" selection-start-line="17" selection-start-column="15" selection-end-line="17" selection-end-column="15" />
+=======
+      <file leaf-file-name="index.html" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/myapplication/templates/index.html">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="-2.6153846">
+              <caret line="4" column="0" selection-start-line="4" selection-start-column="0" selection-end-line="4" selection-end-column="0" />
+>>>>>>> bbd71327b44076a05682620f3e71d082f9e58c8f
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="urls.py" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/myapplication/urls.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="-11.15625">
+              <caret line="21" column="36" selection-start-line="21" selection-start-column="36" selection-end-line="21" selection-end-column="36" />
+>>>>>>> ec7a6b768e6a60d9495b6ab6261d51fe2c592a87
+              <folding>
+                <element signature="e#24#33#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+<<<<<<< HEAD
       <file leaf-file-name="forms.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/myapplication/forms.py">
+=======
+<<<<<<< HEAD
+      <file leaf-file-name="list.html" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/myapplication/templates/list.html">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="0.5011792">
+              <caret line="25" column="5" selection-start-line="25" selection-start-column="5" selection-end-line="25" selection-end-column="5" />
+=======
+      <file leaf-file-name="my_BASE.html" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/myapplication/templates/my_BASE.html">
+>>>>>>> ec7a6b768e6a60d9495b6ab6261d51fe2c592a87
           <provider selected="true" editor-type-id="text-editor">
             <state vertical-scroll-proportion="-15.40625">
               <caret line="35" column="14" selection-start-line="35" selection-start-column="14" selection-end-line="35" selection-end-column="14" />
@@ -82,8 +132,14 @@
       <file leaf-file-name="attachment_tags.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/myapplication/templatetags/attachment_tags.py">
           <provider selected="true" editor-type-id="text-editor">
+<<<<<<< HEAD
             <state vertical-scroll-proportion="-2.65625">
               <caret line="5" column="24" selection-start-line="5" selection-start-column="24" selection-end-line="5" selection-end-column="24" />
+=======
+            <state vertical-scroll-proportion="0.0">
+              <caret line="18" column="14" selection-start-line="18" selection-start-column="14" selection-end-line="18" selection-end-column="14" />
+>>>>>>> bbd71327b44076a05682620f3e71d082f9e58c8f
+>>>>>>> ec7a6b768e6a60d9495b6ab6261d51fe2c592a87
               <folding />
             </state>
           </provider>
@@ -162,7 +218,26 @@
         <option value="$PROJECT_DIR$/postman/templates/postman/view.html" />
         <option value="$PROJECT_DIR$/myapplication/templates/list_search.html" />
         <option value="$PROJECT_DIR$/myapplication/templates/report_edit.html" />
+<<<<<<< HEAD
         <option value="$PROJECT_DIR$/postman/api.py" />
+=======
+        <option value="$PROJECT_DIR$/myapplication/urls.py" />
+<<<<<<< HEAD
+        <option value="$PROJECT_DIR$/myapplication/templates/manage.html" />
+        <option value="$PROJECT_DIR$/myapplication/templates/search.html" />
+>>>>>>> a25e6e923e7d1d0f6f6cf2d90e2c1a7928059548
+=======
+>>>>>>> bbd71327b44076a05682620f3e71d082f9e58c8f
+        <option value="$PROJECT_DIR$/myapplication/views.py" />
+<<<<<<< HEAD
+        <option value="$PROJECT_DIR$/postman/api.py" />
+<<<<<<< HEAD
+=======
+        <option value="$PROJECT_DIR$/myapplication/templates/list.html" />
+>>>>>>> 0e273793abfd2241f0333a9a189fe429b495651d
+=======
+        <option value="$PROJECT_DIR$/myapplication/forms.py" />
+>>>>>>> ec7a6b768e6a60d9495b6ab6261d51fe2c592a87
         <option value="$PROJECT_DIR$/myapplication/templates/search.html" />
         <option value="$PROJECT_DIR$/myapplication/templates/list.html" />
         <option value="$PROJECT_DIR$/myapplication/templates/my_BASE.html" />
@@ -170,6 +245,7 @@
         <option value="$PROJECT_DIR$/static/bootstrap/css/folder.css" />
         <option value="$PROJECT_DIR$/static/bootstrap/css/reports.css" />
         <option value="$PROJECT_DIR$/myapplication/templates/manage.html" />
+<<<<<<< HEAD
         <option value="$PROJECT_DIR$/myapplication/forms.py" />
         <option value="$PROJECT_DIR$/static/bootstrap/css/user.css" />
         <option value="$PROJECT_DIR$/static/bootstrap/css/group.css" />
@@ -180,6 +256,9 @@
         <option value="$PROJECT_DIR$/myapplication/templates/group.html" />
         <option value="$PROJECT_DIR$/myapplication/models.py" />
         <option value="$PROJECT_DIR$/myapplication/views.py" />
+=======
+>>>>>>> bbd71327b44076a05682620f3e71d082f9e58c8f
+>>>>>>> ec7a6b768e6a60d9495b6ab6261d51fe2c592a87
       </list>
     </option>
   </component>
@@ -1012,38 +1091,115 @@
         </state>
       </provider>
     </entry>
+<<<<<<< HEAD
     <entry file="file://$PROJECT_DIR$/myapplication/templates/group_BASE.html">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="-11.115385">
           <caret line="17" column="72" selection-start-line="17" selection-start-column="72" selection-end-line="17" selection-end-column="72" />
+=======
+<<<<<<< HEAD
+    <entry file="file://$PROJECT_DIR$/myapplication/models.py">
+      <provider selected="true" editor-type-id="text-editor">
+<<<<<<< HEAD
+<<<<<<< HEAD
+        <state vertical-scroll-proportion="-10.0">
+          <caret line="67" column="19" selection-start-line="67" selection-start-column="19" selection-end-line="67" selection-end-column="20" />
+=======
+        <state vertical-scroll-proportion="-66.03846">
+          <caret line="110" column="31" selection-start-line="110" selection-start-column="31" selection-end-line="110" selection-end-column="31" />
+>>>>>>> a25e6e923e7d1d0f6f6cf2d90e2c1a7928059548
+=======
+        <state vertical-scroll-proportion="-12.75">
+          <caret line="25" column="43" selection-start-line="25" selection-start-column="43" selection-end-line="25" selection-end-column="43" />
+>>>>>>> 0e273793abfd2241f0333a9a189fe429b495651d
+=======
+    <entry file="file://$PROJECT_DIR$/myapplication/templates/my_BASE.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-3.2692308">
+          <caret line="5" column="27" selection-start-line="5" selection-start-column="27" selection-end-line="5" selection-end-column="27" />
+>>>>>>> bbd71327b44076a05682620f3e71d082f9e58c8f
+>>>>>>> ec7a6b768e6a60d9495b6ab6261d51fe2c592a87
           <folding />
         </state>
       </provider>
     </entry>
+<<<<<<< HEAD
     <entry file="file://$PROJECT_DIR$/static/bootstrap/css/users.css">
+=======
+<<<<<<< HEAD
+<<<<<<< HEAD
+<<<<<<< HEAD
+    <entry file="file://$PROJECT_DIR$/myapplication/templates/index.html">
+=======
+    <entry file="file://$PROJECT_DIR$/myapplication/templates/manage_BASE.html">
+>>>>>>> bbd71327b44076a05682620f3e71d082f9e58c8f
+>>>>>>> ec7a6b768e6a60d9495b6ab6261d51fe2c592a87
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
           <caret line="13" column="15" selection-start-line="13" selection-start-column="15" selection-end-line="13" selection-end-column="15" />
           <folding />
+=======
+    <entry file="file://$PROJECT_DIR$/myapplication/views.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-11.6875">
+          <caret line="22" column="27" selection-start-line="22" selection-start-column="27" selection-end-line="22" selection-end-column="27" />
+          <folding>
+            <element signature="e#24#33#0" expanded="true" />
+          </folding>
+>>>>>>> 0e273793abfd2241f0333a9a189fe429b495651d
         </state>
       </provider>
     </entry>
+<<<<<<< HEAD
     <entry file="file://$PROJECT_DIR$/static/bootstrap/css/group.css">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
           <caret line="37" column="22" selection-start-line="37" selection-start-column="22" selection-end-line="37" selection-end-column="22" />
+=======
+<<<<<<< HEAD
+    <entry file="file://$PROJECT_DIR$/myapplication/templates/manage.html">
+      <provider selected="true" editor-type-id="text-editor">
+<<<<<<< HEAD
+<<<<<<< HEAD
+        <state vertical-scroll-proportion="0.0">
+          <caret line="13" column="12" selection-start-line="13" selection-start-column="12" selection-end-line="13" selection-end-column="12" />
+=======
+    <entry file="file://$PROJECT_DIR$/myapplication/templates/list.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="60.884617">
+          <caret line="22" column="37" selection-start-line="22" selection-start-column="37" selection-end-line="22" selection-end-column="37" />
+>>>>>>> bbd71327b44076a05682620f3e71d082f9e58c8f
+>>>>>>> ec7a6b768e6a60d9495b6ab6261d51fe2c592a87
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/myapplication/templatetags/attachment_tags.py">
       <provider selected="true" editor-type-id="text-editor">
+<<<<<<< HEAD
         <state vertical-scroll-proportion="-2.65625">
           <caret line="5" column="24" selection-start-line="5" selection-start-column="24" selection-end-line="5" selection-end-column="24" />
+=======
+        <state vertical-scroll-proportion="0.0">
+<<<<<<< HEAD
+          <caret line="29" column="0" selection-start-line="29" selection-start-column="0" selection-end-line="29" selection-end-column="0" />
+=======
+        <state vertical-scroll-proportion="-12.75">
+          <caret line="25" column="43" selection-start-line="25" selection-start-column="43" selection-end-line="25" selection-end-column="43" />
+>>>>>>> a25e6e923e7d1d0f6f6cf2d90e2c1a7928059548
+=======
+        <state vertical-scroll-proportion="77.88461">
+          <caret line="17" column="15" selection-start-line="17" selection-start-column="15" selection-end-line="17" selection-end-column="15" />
+>>>>>>> 0e273793abfd2241f0333a9a189fe429b495651d
+=======
+          <caret line="42" column="32" selection-start-line="42" selection-start-column="32" selection-end-line="42" selection-end-column="32" />
+>>>>>>> bbd71327b44076a05682620f3e71d082f9e58c8f
+>>>>>>> ec7a6b768e6a60d9495b6ab6261d51fe2c592a87
           <folding />
         </state>
       </provider>
     </entry>
+<<<<<<< HEAD
     <entry file="file://$PROJECT_DIR$/myapplication/templatetags/user_tags.py">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="-1.59375">
@@ -1055,10 +1211,34 @@
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/myapplication/tests.py">
+=======
+<<<<<<< HEAD
+    <entry file="file://$PROJECT_DIR$/myapplication/templates/list.html">
+      <provider selected="true" editor-type-id="text-editor">
+<<<<<<< HEAD
+<<<<<<< HEAD
+        <state vertical-scroll-proportion="186.40741">
+          <caret line="29" column="19" selection-start-line="29" selection-start-column="0" selection-end-line="30" selection-end-column="0" />
+=======
+        <state vertical-scroll-proportion="9.388361">
+          <caret line="465" column="27" selection-start-line="465" selection-start-column="27" selection-end-line="465" selection-end-column="27" />
+>>>>>>> a25e6e923e7d1d0f6f6cf2d90e2c1a7928059548
+          <folding>
+            <element signature="e#24#33#0" expanded="true" />
+          </folding>
+=======
+        <state vertical-scroll-proportion="0.5011792">
+          <caret line="25" column="5" selection-start-line="25" selection-start-column="5" selection-end-line="25" selection-end-column="5" />
+          <folding />
+>>>>>>> 0e273793abfd2241f0333a9a189fe429b495651d
+=======
+    <entry file="file://$PROJECT_DIR$/static/bootstrap/css/folder.css">
+>>>>>>> ec7a6b768e6a60d9495b6ab6261d51fe2c592a87
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
           <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
           <folding />
+>>>>>>> bbd71327b44076a05682620f3e71d082f9e58c8f
         </state>
       </provider>
     </entry>

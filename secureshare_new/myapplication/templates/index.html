@@ -28,7 +28,11 @@
                  <li><a href="{% url 'postman:trash' %}">Trash</a></li>
                 </ul>
             {% endblock %}
-            <li><a href="{% url 'list_of_users' %}">List of Users</a>
+            <li><a href="{% url 'list_of_users' %}">Activate An Account (site admin only)</a>
+            <li><a href="{% url 'deactivate' %}">Deactivate An Account (site admin only)</a>
+            <li><a href="{% url 'make_super_user' %}">Make An Account Superuser (site admin only)</a>
+            <li><a href="{% url 'disable_super_user' %}">Disable Superuser (site admin only)</a>
+            <li><a href="{% url 'edit_groups' %}">Edit Groups (site admin only)</a>
         </ul>
         </br>
        

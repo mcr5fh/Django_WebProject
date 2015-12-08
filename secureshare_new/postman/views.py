@@ -314,10 +314,12 @@ class ReplyView(ComposeMixin, FormView):
 
 from django.shortcuts import render, render_to_response
 from django.template import RequestContext
-from Crypto.Cipher import AES
-from Crypto.Hash import SHA256
-from Crypto.Util import Counter
-from itertools import chain
+# from Crypto.Cipher import AES
+# from Crypto.Hash import SHA256
+# from Crypto.Util import Counter
+# from itertools import chain
+# from secureshare.settings import COUNTER
+from simplecrypt import decrypt, DecryptionException
 
 class DisplayMixin(NamespaceMixin, object):
     """
@@ -368,6 +370,8 @@ class DisplayMixin(NamespaceMixin, object):
         context = super(DisplayMixin, self).get_context_data(**kwargs)
         user = self.request.user
 
+        self.msgs = Message.objects.thread(user, self.filter)
+
         # are all messages archived ?
         for m in self.msgs:
             if not getattr(m, ('sender' if m.sender == user else 'recipient') + '_archived'):
@@ -384,47 +388,23 @@ class DisplayMixin(NamespaceMixin, object):
             received = None
         #check for encryption/dectryption (may need to
         if self.request.method == 'POST':
-            if self.request.POST['convers']:
                 #if it is a post then we know there will be a decryption key
                 dec_key = self.request.POST['dec_key']
-                hash_pw = SHA256.new(str.encode(dec_key))
 
-                sym_key = hash_pw.digest()
-                if len(sym_key) >= 16:
-                    if(len(sym_key) < 24 ):
-                        sym_key = sym_key[0:16]
-                    elif len(sym_key) < 32:
-                        sym_key = sym_key[0:24]
-                    elif len(sym_key) > 32:
-                        sym_key = sym_key[0:32]
 
-                msgs_to_dec = self.msgs
                 reply =False
-
-
+                wrong_key=False
+                msgs_to_dec = self.msgs
                 for msg in msgs_to_dec:
-                    if msg.thread:
-                        #print("THREAD" + str(len(self.msgs)) + " A" + str(len(msgs_to_dec)))
-                        reply = True
-                    encryption_suite = AES.new(sym_key, AES.MODE_CTR, b"", Counter.new(128))
-                    msg.body = encryption_suite.decrypt(msg.body)
-                    # msg.body = str(cipher.decrypt(str.encode(msg.body)))
-                    #print("message body:  " + str(msg.body))
-
-
-
-                msg_id_req = str(self.request)
-
-                if reply:
-                    msg_id = msg_id_req[len(msg_id_req)-4]
-                else:
-                    msg_id = msg_id_req[len(msg_id_req)-4]
-
-                # if reply:
-                #     msgs_to_dec = chain(Message.objects.filter(self.filter, Q(id!=msg_id)))
+                    msg_id = msg.id
+                    try:
+                        msg.body = decrypt(dec_key, msg.raw_bytes).decode('utf-8')
+                    except DecryptionException:
+                        wrong_key = True
+                        print("WRONG KEY")
 
                 context.update({
-                    #'reply': reply,
+                    'wrong_key': wrong_key,
                     'message_id': msg_id,
                     'encrypted': False,
                     'pm_messages': msgs_to_dec,
@@ -443,6 +423,7 @@ class DisplayMixin(NamespaceMixin, object):
                     encrypted=True
                 if msg.thread:
                     reply = True
+                msg_id = msg.id
 
             if encrypted:
                 self.template_name = 'postman/decrypt_key.html'
@@ -450,13 +431,13 @@ class DisplayMixin(NamespaceMixin, object):
             msg_id_req = str(self.request)
 
             conversation =False
-            if len(self.msgs) >1:
-                conversation = True
-            try:
-                index = msg_id_req.index('?')
-                msg_id = msg_id_req[index-2]
-            except:
-                msg_id = msg_id_req[len(msg_id_req)-4]
+            # if len(self.msgs) >1:
+            #     conversation = True
+            # try:
+            #     index = msg_id_req.index('?')
+            #     msg_id = msg_id_req[index-2]
+            # except:
+            #     msg_id = msg_id_req[len(msg_id_req)-4]
 
             context.update({
                 'convers': conversation,
