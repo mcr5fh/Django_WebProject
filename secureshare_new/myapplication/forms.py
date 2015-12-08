@@ -19,11 +19,32 @@ class LoginForm(forms.Form):
     username = forms.CharField(label = "Username", max_length = 100)
     password = forms.CharField(label = "Password", max_length = 100, widget = forms.PasswordInput)
 
-class LOUForm(forms.ModelForm):
-    is_activated = forms.BooleanField()
-    class Meta:
-        model = User
-        fields = {'is_activated'}
+class DeactivateForm(forms.Form):
+    user_to_deactivate = forms.CharField(label = "User to deactivate", max_length = 100)
+
+class SuperUserForm(forms.Form):
+    super_user = forms.CharField(label = "Make Me A SuperUser", max_length = 100)
+
+class DisableSuperUserForm(forms.Form):
+    disable_super_user = forms.CharField(label = "Disable As A SuperUser", max_length = 100)
+
+class LOUForm(forms.Form):
+    user_to_activate = forms.CharField(label = "User to activate", max_length = 100)
+    #user_to_activate = forms.CharField(label = "User to activate", max_length = 100)
+    #make_super_user = forms.CharField(label = "make superuser", max_length = 100)
+#    class Meta:
+#        fields = ['user_to_deactivate','user_to_activate','make_super_user']
+    #is_activated = forms.BooleanField()
+    #class Meta:
+    #model = User
+    #fields = {'is_activated'}
+
+class CreateGroupForm(forms.Form):
+    group_form = forms.CharField(label = "Name of Group", max_length = 100)
+
+class AddUserToGroupForm(forms.Form):
+    add_user = forms.CharField(label = "Name of User Being Added to Group", max_length = 100)
+    add_to_group = forms.CharField(label = "Add User To This Group", max_length = 100)
 
 
 class ReportForm(forms.ModelForm):

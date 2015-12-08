@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+{% extends "my_BASE.html" %}
+
+	{% block title %} Create/Add Users To Groups Here {%  endblock %}
+
+	{% block content %}
+	<div class="container">
+        {% csrf_token %}
+
+	<ul>
+	<li><a href = "{% url 'create_group'%}">Create a Group</a></li>
+	<li><a href = "{% url 'add_to_group'%}">Add User To a Group</a></li>	
+	</ul>
+
+	{% endblock %}

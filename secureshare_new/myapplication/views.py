@@ -7,8 +7,8 @@ from django.template import RequestContext
 from django.http import HttpResponseRedirect
 from django.core.urlresolvers import reverse
 from django.shortcuts import get_object_or_404
-from django.contrib.auth.models import User
-from myapplication.forms import UserForm, LOUForm
+from django.contrib.auth.models import User, Group
+from myapplication.forms import UserForm, LOUForm, DeactivateForm, SuperUserForm,DisableSuperUserForm, CreateGroupForm, AddUserToGroupForm
 from django.views.generic.edit import FormView
 from myapplication.forms import UserForm, MessageForm
 from myapplication.models import Report
@@ -47,15 +47,138 @@ from Crypto.Util import Counter
 def index(request):
     return render(request, 'index.html')
 
+@login_required
+def deactivate(request):
+    if request.user.is_superuser:
+        deactivated = False
+        if request.method == 'POST':
+            deactivate_form = DeactivateForm(data=request.POST)
+            if deactivate_form.is_valid():
+                deactivate_name = request.POST['user_to_deactivate']
+                user = User.objects.get(username=deactivate_name)
+                user.is_active = False
+                user.save()
+                deactivated = True
+            else:
+                deactivate_form = DeactivateForm()
+        else:
+            deactivate_form = DeactivateForm()
+        return render(request,'deactivate.html',{'deactivate_form': deactivate_form, 'deactivated':deactivated})
+    else:
+        return render(request,'list_of_users.html')
+
+
+@login_required
+def make_super_user(request):
+    if request.user.is_superuser:
+        made_super_user = False
+        if request.method == 'POST':
+            super_user_form = SuperUserForm(data=request.POST)
+            if super_user_form.is_valid():
+                superuser_name = request.POST['super_user']
+                user = User.objects.get(username=superuser_name)
+                user.is_superuser = True
+                user.save()
+                made_super_user
+            else:
+                super_user_form = SuperUserForm()
+        else:
+            super_user_form = SuperUserForm()
+        return render(request, 'make_super_user.html', {'super_user_form':super_user_form, 'made_super_user':made_super_user})
+    else:
+        return render(request,'list_of_users.html')
+
+
+@login_required
+def disable_super_user(request):
+    if request.user.is_superuser:
+        disabled_super_user = False
+        if request.method == 'POST':
+            disable_super_user_form = DisableSuperUserForm(data=request.POST)
+            if disable_super_user_form.is_valid():
+                superuser_name = request.POST['disable_super_user']
+                user = User.objects.get(username=superuser_name)
+                user.is_superuser = False
+                user.save()
+                disabled_super_user = True
+            else:
+                disable_super_user_form = DisableSuperUserForm()
+        else:
+            disable_super_user_form = DisableSuperUserForm()
+        return render(request, 'disable_super_user.html', {'disable_super_user_form':disable_super_user_form, 'disabled_super_user':disabled_super_user})
+    else:
+        return render(request,'list_of_users.html')
+
+
 
 @login_required
 def list_of_users(request):
     if request.user.is_superuser:
-        lou_form = LOUForm(data=request.POST)
-        list = User.objects.all()
-        return render(request, 'list_of_users_sm.html', {'lou_form':lou_form,'list': list})
+        activated = False
+        if request.method == 'POST':
+            lou_form = LOUForm(data=request.POST)
+            if lou_form.is_valid():
+                activate_name = request.POST['user_to_activate']
+                user = User.objects.get(username=activate_name)
+                user.is_active = True
+                user.save()
+                activated = True
+            else:
+                lou_form = LOUForm()
+        else:
+            lou_form = LOUForm()
+        return render(request, 'list_of_users_sm.html', {'lou_form':lou_form, 'activated':activated})
     else:
         return render(request,'list_of_users.html')
+
+
+
+@login_required
+def edit_groups(request):
+    if request.user.is_superuser:
+        return render(request,'edit_groups.html')
+    else:
+        return render(request, 'list_of_users.html')
+
+
+@login_required
+def create_group(request):
+    if request.method == 'POST':
+        new_group_form = CreateGroupForm(data = request.POST)
+        if new_group_form.is_valid():
+            group_name = request.POST['group_form']
+            newgroup = Group.objects.create(name=group_name)
+    else:
+        new_group_form = CreateGroupForm()
+
+    return render(request, 'create_group.html', {'new_group_form':new_group_form})
+
+
+
+@login_required
+def add_to_group(request):
+    if request.method == 'POST':
+        add_user_form = AddUserToGroupForm(data = request.POST)
+        if add_user_form.is_valid:
+            user_name = request.POST['add_user']
+            add_to = request.POST['add_to_group']
+            user = User.objects.get(username = user_name)
+            g = Group.objects.get(name=add_to)
+            #g.user_set.add(user_name)
+            user.groups.add(g)
+    else:
+        add_user_form = AddUserToGroupForm()
+    return render(request, 'add_to_group.html', {'add_user_form':add_user_form})
+
+
+
+
+
+
+
+
+
+
 
 
 @login_required
@@ -243,6 +366,8 @@ def remove_report(request):
         #f.save()
         #r.save()
     return HttpResponseRedirect(reverse('myapplication.views.manage'))
+
+
 
 #NOTE: if user already exists then it jsut resets
 def register(request):

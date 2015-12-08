@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+{% extends "my_BASE.html" %}
+
+	{% block title %} Create A Group {%  endblock %}
+
+	{% block content %}
+	<div class="container">
+	<form method = "post">{% csrf_token %}
+	{{new_group_form.as_p}}
+	<input type='submit' value='Are you sure?' />
+        </form>
+	
+	{% endblock %}
