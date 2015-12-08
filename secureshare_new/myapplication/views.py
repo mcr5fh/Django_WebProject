@@ -17,10 +17,10 @@ from myapplication.models import Report
 from myapplication.models import Folder
 
 
-#from myapplication.models import Attachment
+# from myapplication.models import Attachment
 
-#from myapplication.forms import Report_FolderForm
-#from myapplication.models import Report_Folder
+# from myapplication.forms import Report_FolderForm
+# from myapplication.models import Report_Folder
 
 from myapplication.forms import ReportForm
 from django.utils import timezone
@@ -28,7 +28,8 @@ from myapplication.forms import LoginForm
 from django.contrib.auth.decorators import login_required
 
 from django.contrib.auth import authenticate, login, logout
-from django.contrib.auth.models import User
+from django.contrib.auth.models import User, Group, Permission
+from django.contrib.contenttypes.models import ContentType
 from django.db.models import Q
 
 # import the logging library
@@ -44,9 +45,86 @@ from Crypto.Cipher import AES
 from Crypto.Hash import MD5
 from Crypto.Util import Counter
 
+
 @login_required
 def index(request):
     return render(request, 'index.html')
+
+
+@login_required
+def group(request):
+    users = User.objects.all()
+    # get groups where user is in the group
+    groups = []
+    for g in request.user.groups.all():
+        groups.append(g)
+    return render(request, 'group.html', {'users': users, 'groups': groups})
+
+
+@login_required
+def group_new(request):
+    # create new folder
+    if request.method == 'POST':
+        gname = request.POST.get("name", "")
+        g = Group(name=gname)
+        g.save()
+        u = request.user
+        u.groups.add(g)
+        u.save()
+    return HttpResponseRedirect(reverse('myapplication.views.group'))
+
+
+@login_required
+def group_delete(request):
+    if request.method != 'POST':
+        logger.log("METHOD NOT POST")
+        # raise HTTP404
+
+    groupPk = request.POST.get('group', None)
+    groupToDel = get_object_or_404(Group, pk=groupPk)
+    for userToDel in groupToDel.user_set.all():
+        groupToDel.user_set.remove(userToDel);
+        userToDel.save()
+        groupToDel.save()
+
+    groupToDel.delete()
+
+    return HttpResponseRedirect(reverse('myapplication.views.group'))
+
+
+def move_user(request):
+    if request.method == 'POST':
+        userPk = request.POST.get("userpk", "")
+        groupPk = request.POST.get("grouppk", "")
+        u = User.objects.get(pk=userPk)
+        g = Group.objects.get(pk=groupPk)
+        g.user_set.add(u)
+        g.save()
+    '''
+    content_type = ContentType.objects.get(app_label='myapplication', model='Report')
+    #permission = Permission.objects.create(codename='can_view', name='Can view Reports',
+                                           content_type=content_type)
+    #user = User.objects.get(username=username)
+    #group = Group.objects.get(name=name)
+    #group.permissions.add(permission)
+    #user.groups.add(group)
+    '''
+    return HttpResponseRedirect(reverse('myapplication.views.group'))
+
+
+@login_required
+def remove_user(request):
+    if request.method == 'POST':
+        userPk = request.POST.get("user", "")
+        groupPk = request.POST.get("group", "")
+        u = User.objects.get(pk=userPk)
+        g = Group.objects.get(pk=groupPk)
+        g.user_set.remove(u)
+        g.save()
+        u.save()
+        # f.save()
+        # r.save()
+    return HttpResponseRedirect(reverse('myapplication.views.group'))
 
 
 @login_required
@@ -54,66 +132,90 @@ def list_of_users(request):
     if request.user.is_superuser:
         lou_form = LOUForm(data=request.POST)
         list = User.objects.all()
-        return render(request, 'list_of_users_sm.html', {'lou_form':lou_form,'list': list})
+        return render(request, 'list_of_users_sm.html', {'lou_form': lou_form, 'list': list})
     else:
-        return render(request,'list_of_users.html')
+        return render(request, 'list_of_users.html')
 
 
 @login_required
 def report_new(request):
-    #logger.error("User in request: " + request.user.username)
+    # logger.error("User in request: " + request.user.username)
     # Handle file upload
     if request.method == 'POST':
         logger.error("User in request: " + request.user.username)
-        form = ReportForm(request.POST, request.FILES)#, {'user': request.user.username})
+        form = ReportForm(request.POST, request.FILES)  # , {'user': request.user.username})
 
         if form.is_valid():
+            # newReport = form.save(commit=False)
+            # newReport.timestamp = timezone.now()
 
-            #newReport = form.save(commit=False)
-            #newReport.timestamp = timezone.now()
-
-            #if request.FILES['file']:
+            # if request.FILES['file']:
             #   newReport.file = request.FILES['file']
-            #newReport.save()
+            # newReport.save()
 
-            #form.Meta.fields = request.user.username
+            # form.Meta.fields = request.user.username
             newReport = form.save(commit=False)
             newReport.username = request.user.username
-
             newReport.save()
+            for g in request.user.groups.all():
+                newReport.group.add(g)
 
-            #for afile in request.FILES.getlist('files'):
-                #add file to model
+            # for afile in request.FILES.getlist('files'):
+            # add file to model
 
 
             # Redirect to the report list after POST
             return HttpResponseRedirect(reverse('myapplication.views.manage'))
     else:
-        form = ReportForm() # A empty, unbound form
-       # fileForm = FileForm()
+        form = ReportForm()  # A empty, unbound form
+        # fileForm = FileForm()
     return render(request, 'report.html', {'form': form})
 
 
-#test this more. Admin must be able to see all reports
+# test this more. Admin must be able to see all reports
 @login_required
 def list(request):
-
     # Load documents for the list page
-    #attachments = Attachment.objects.all()
+    # attachments = Attachment.objects.all()
 
     if request.user.is_superuser:
         reports = Report.objects.all()
     else:
-       reports = Report.objects.filter(Q(username=request.user.username) | Q(visibility="public"))
+        '''
+        #list all reports that you created, and are public to you
+        #also list all reports that you have been given access to:
+        #All the groups you are in: get all the users in those groups: get their private reports
+       group_list = request.user.group.values_list('')
+       '''
+        # query_string = "Q(username=request.user.username) | Q(visibility='public')"
+        query = Q(username=request.user.username) | Q(visibility='public')
+        for g in request.user.groups.all():
+            print(str(g))
+            query.add(Q(group=g), Q.OR)
+        reports = Report.objects.filter(query)
 
-    #TODO: Add visibility to folders
-    #folders = Report_Folder.objects.filter(Q(user=request.user.username))
+        # When we add a user to a group, add the group to all the user's reports.group attribute
+        # When we delete a user froma group, delete the group from all the user's reports.group attribute
+
+        # trying to get all the reports associated with the groups you are in
+
+    '''
+      users = g.user_set.all()
+      for user in users:
+          #append user to unique users array
+
+  reports = reports.filter(Q(group=))
+  '''
+
+    # TODO: Add visibility to folders
+    # folders = Report_Folder.objects.filter(Q(user=request.user.username))
     # Render list page with the documents and the form
     return render_to_response(
         'list.html',
         {'reports': reports},
         context_instance=RequestContext(request)
     )
+
 
 '''
 @login_required
@@ -129,11 +231,11 @@ def report_folder_new(request):
 def delete(request):
     if request.method != 'POST':
         logger.error("METHOD NOT POST")
-        #raise HTTP404
+        # raise HTTP404
 
     reportId = request.POST.get('report', None)
-    reportToDel = get_object_or_404(Report, pk = reportId)
-    #for attachment in reportToDel.attachment_set.all():
+    reportToDel = get_object_or_404(Report, pk=reportId)
+    # for attachment in reportToDel.attachment_set.all():
     #    attachment.file.delete()
     #    attachment.delete()
     if reportToDel.file1:
@@ -150,6 +252,7 @@ def delete(request):
 
     return HttpResponseRedirect(reverse('myapplication.views.manage'))
 
+
 @login_required
 def report_edit(request, pk):
     report = Report.objects.get(pk=pk)
@@ -158,16 +261,17 @@ def report_edit(request, pk):
         if form.is_valid():
             report = form.save(commit=False)
             report.timestamp = timezone.now()
-            #for attachment in report.attachment_set.all():
+            # for attachment in report.attachment_set.all():
             #    attachment.file.save()
             #    attachment.save()
             report.save()
-            #form.save()
+            # form.save()
             # Redirect to the report list after POST
             return HttpResponseRedirect(reverse('myapplication.views.manage'))
     else:
         form = ReportForm(instance=report)
     return render(request, 'report_edit.html', {'form': form, 'report': report})
+
 
 @login_required
 def manage(request):
@@ -185,9 +289,10 @@ def manage(request):
         context_instance=RequestContext(request)
     )
 
+
 @login_required
 def folder_new(request):
-    #create new folder
+    # create new folder
     if request.method == 'POST':
         fname = request.POST.get("name", "")
         f = Folder(name=fname)
@@ -195,14 +300,15 @@ def folder_new(request):
         f.save()
     return HttpResponseRedirect(reverse('myapplication.views.manage'))
 
+
 @login_required
 def folder_delete(request):
     if request.method != 'POST':
         logger.log("METHOD NOT POST")
-        #raise HTTP404
+        # raise HTTP404
 
     folderPk = request.POST.get('folder', None)
-    folderToDel = get_object_or_404(Folder, pk = folderPk)
+    folderToDel = get_object_or_404(Folder, pk=folderPk)
     for reportToDel in folderToDel.report_set.all():
         folderToDel.report_set.remove(reportToDel);
         '''
@@ -222,9 +328,10 @@ def folder_delete(request):
 
     return HttpResponseRedirect(reverse('myapplication.views.manage'))
 
+
 @login_required
 def move_report(request):
-    #create new folder
+    # create new folder
     if request.method == 'POST':
         reportPk = request.POST.get("reportpk", "")
         folderPk = request.POST.get("folderpk", "")
@@ -232,13 +339,13 @@ def move_report(request):
         f = Folder.objects.get(pk=folderPk)
         f.report_set.add(r)
         f.save()
-        #f.save()
-        #r.save()
+        # f.save()
+        # r.save()
     return HttpResponseRedirect(reverse('myapplication.views.manage'))
+
 
 @login_required
 def remove_report(request):
-
     if request.method == 'POST':
         reportPk = request.POST.get("report", "")
         folderPk = request.POST.get("folder", "")
@@ -246,46 +353,46 @@ def remove_report(request):
         f = Folder.objects.get(pk=folderPk)
         f.report_set.remove(r)
         f.save()
-        #f.save()
-        #r.save()
+        # f.save()
+        # r.save()
     return HttpResponseRedirect(reverse('myapplication.views.manage'))
 
-#NOTE: if user already exists then it jsut resets
+
+# NOTE: if user already exists then it jsut resets
 def register(request):
     context = RequestContext(request)
-    #a boolean value for telling the template whether the registration was successful. Set to False originally, code changes to True when registration succeeds.
+    # a boolean value for telling the template whether the registration was successful. Set to False originally, code changes to True when registration succeeds.
     registered = False
     # If it's a HTTP POST, we're interested in processing form data
     if request.method == 'POST':
-        
+
         user_form = UserForm(data=request.POST)
-        
-        
-        #validation checking...
+
+
+        # validation checking...
         if user_form.is_valid():
-            
             user = user_form.save()
-            
+
             user.set_password(user.password)
-            
+
             user.save()
 
-#profile = profile_form.save(commit=False)
+            # profile = profile_form.save(commit=False)
 
-#           profile.user = user
+            #           profile.user = user
 
-        #save the UserProfile model instance/update variable to tell the template registration was successful
+            # save the UserProfile model instance/update variable to tell the template registration was successful
 
-#profile.save()
+            # profile.save()
 
             registered = True
 
 
     else:
         user_form = UserForm()
-#profile_form = UserProfileForm()
+    # profile_form = UserProfileForm()
 
-    return render_to_response('register.html', {'user_form': user_form,'registered': registered}, context)
+    return render_to_response('register.html', {'user_form': user_form, 'registered': registered}, context)
 
 
 def login_view(request):
@@ -295,7 +402,7 @@ def login_view(request):
 
     if request.method == 'POST':
 
-         #check to see if the post came from the logout in the reports page
+        # check to see if the post came from the logout in the reports page
         if 'logout' in request.POST:
             logout(request)
             logger.error('Logging out')
@@ -317,30 +424,34 @@ def login_view(request):
                     logged_in = True
                     logger.error("User: " + user.username)
                     # Return to reports page
-                    return render_to_response('index.html', {'login_form': login_form,'logged_in': logged_in, 'user': user}, context)
+                    return render_to_response('index.html',
+                                              {'login_form': login_form, 'logged_in': logged_in, 'user': user}, context)
             else:
                 logger.error('invalid login error message')
                 logged_in = False
                 invalid_login = True
                 login_form = LoginForm()
-                return render(request, "login.html", {'login_form': login_form, 'invalid_log': invalid_login, 'logged_in': logged_in})
+                return render(request, "login.html",
+                              {'login_form': login_form, 'invalid_log': invalid_login, 'logged_in': logged_in})
 
 
-                    
+
     else:
         if request.user.is_authenticated():
             logged_in = True
         login_form = LoginForm()
-    
-    return render_to_response('login.html', {'login_form': login_form,'logged_in': logged_in}, context)
+
+    return render_to_response('login.html', {'login_form': login_form, 'logged_in': logged_in}, context)
+
 
 from postman.api import pm_write, pm_broadcast
+
 
 def send_broadcast(request):
     if request.method == 'POST':
         form = BroadcastForm(request.POST)
 
-        #validation checking...
+        # validation checking...
         if form.is_valid():
             sender = request.user
 
@@ -351,11 +462,11 @@ def send_broadcast(request):
             if enc_key == "":
                 enc_key = "N/A"
             else:
-                #encrypt
+                # encrypt
                 hash_pw = SHA256.new(str.encode(enc_key))
                 sym_key = hash_pw.digest()
                 if len(sym_key) >= 16:
-                    if(len(sym_key) < 24 ):
+                    if (len(sym_key) < 24):
                         sym_key = sym_key[0:16]
                     elif len(sym_key) < 32:
                         sym_key = sym_key[0:24]
@@ -364,23 +475,22 @@ def send_broadcast(request):
                 encryption_suite = AES.new(sym_key, AES.MODE_CTR, b"", Counter.new(128))
                 text = encryption_suite.encrypt(text)
 
-
-            pm_broadcast(sender,"", subject, encrypted, body=text)
+            pm_broadcast(sender, "", subject, encrypted, body=text)
             return render(request, 'postman/inbox.html', )
         else:
-            return render(request, 'broadcast.html', {'message_form': form })
+            return render(request, 'broadcast.html', {'message_form': form})
 
 
     else:
         form = BroadcastForm()
-        return render(request, 'broadcast.html', {'message_form': form })
+        return render(request, 'broadcast.html', {'message_form': form})
 
 
 def send_message(request):
     if request.method == 'POST':
         form = MessageForm(request.POST)
 
-        #validation checking...
+        # validation checking...
         if form.is_valid():
             sender = request.user
             recipient_name = request.POST['recipient']
@@ -388,7 +498,7 @@ def send_message(request):
                 recipient = User.objects.get(username=recipient_name)
             except  User.DoesNotExist:
                 error = "User does not exist.  Please enter a valid username"
-                return render(request, 'new_message.html', {'message_form': form , "error": error})
+                return render(request, 'new_message.html', {'message_form': form, "error": error})
 
             subject = request.POST['subject']
             text = request.POST['body']
@@ -397,11 +507,11 @@ def send_message(request):
             if enc_key == "":
                 enc_key = "N/A"
             else:
-                #encrypt
+                # encrypt
                 hash_pw = SHA256.new(str.encode(enc_key))
                 sym_key = hash_pw.digest()
                 if len(sym_key) >= 16:
-                    if(len(sym_key) < 24 ):
+                    if (len(sym_key) < 24):
                         sym_key = sym_key[0:16]
                     elif len(sym_key) < 32:
                         sym_key = sym_key[0:24]
@@ -410,31 +520,32 @@ def send_message(request):
                 encryption_suite = AES.new(sym_key, AES.MODE_CTR, b"", Counter.new(128))
                 text = encryption_suite.encrypt(text)
 
-
-            pm_write(sender,recipient,subject, encrypted, body=text)
+            pm_write(sender, recipient, subject, encrypted, body=text)
             return render(request, 'postman/inbox.html', )
         else:
-            return render(request, 'new_message.html', {'message_form': form })
+            return render(request, 'new_message.html', {'message_form': form})
 
 
     else:
         form = MessageForm()
-        return render(request, 'new_message.html', {'message_form': form })
+        return render(request, 'new_message.html', {'message_form': form})
+
 
 def normalize_query(query_string,
                     findterms=re.compile(r'"([^"]+)"|(\S+)').findall,
                     normspace=re.compile(r'\s{2,}').sub):
     return [normspace(' ', (t[0] or t[1]).strip()) for t in findterms(query_string)]
 
+
 def get_query(query_string, search_fields):
     ''' Returns a query, that is a combination of Q objects. That combination
         aims to search keywords within a model by testing the given search fields.
 
     '''
-    query = None # Query to search for every search term
+    query = None  # Query to search for every search term
     terms = normalize_query(query_string)
     for term in terms:
-        or_query = None # Query to search for a given term in each field
+        or_query = None  # Query to search for a given term in each field
         for field_name in search_fields:
             q = Q(**{"%s__icontains" % field_name: term})
             if or_query is None:
@@ -446,6 +557,7 @@ def get_query(query_string, search_fields):
         else:
             query = query & or_query
     return query
+
 
 def search(request):
     query_string = ''
@@ -475,7 +587,9 @@ def search(request):
             if request.user.is_superuser:
                 found_entries = Report.objects.all()
             else:
-                found_entries = Report.objects.filter(Q(username=request.user.username) | Q(visibility="public")).filter(entry_query).order_by('timestamp')
+                found_entries = Report.objects.filter(
+                    Q(username=request.user.username) | Q(visibility="public")).filter(entry_query).order_by(
+                    'timestamp')
 
         else:
             found_entries = None
@@ -486,7 +600,7 @@ def search(request):
         beginMatch = re.match('\d{4}-\d{2}-\d{2}', begin)
         endMatch = re.match('\d{4}-\d{2}-\d{2}', end)
         if beginMatch and endMatch:
-            found_entries = found_entries.filter(timestamp__range=[begin,end])
+            found_entries = found_entries.filter(timestamp__range=[begin, end])
             badDate = False
         else:
             badDate = True
@@ -500,14 +614,15 @@ def search(request):
         if request.user.is_superuser:
             found_entries = Report.objects.all()
         else:
-            found_entries = Report.objects.filter(Q(username=request.user.username) | Q(visibility="public")).order_by('timestamp')
+            found_entries = Report.objects.filter(Q(username=request.user.username) | Q(visibility="public")).order_by(
+                'timestamp')
         begin = request.GET['begin']
         end = request.GET['end']
 
         beginMatch = re.match('\d{4}-\d{2}-\d{2}', begin)
         endMatch = re.match('\d{4}-\d{2}-\d{2}', end)
         if beginMatch and endMatch:
-            found_entries = found_entries.filter(timestamp__range=[begin,end])
+            found_entries = found_entries.filter(timestamp__range=[begin, end])
             badDate = False
         else:
             badDate = True
@@ -518,8 +633,6 @@ def search(request):
         else:
             found_entries = found_entries.filter(visibility=visibilityGet)
 
-
     return render_to_response('search.html',
-                          { 'query_string': query_string, 'found_entries': found_entries, 'bad_date': badDate },
-                          context_instance=RequestContext(request))
-
+                              {'query_string': query_string, 'found_entries': found_entries, 'bad_date': badDate},
+                              context_instance=RequestContext(request))

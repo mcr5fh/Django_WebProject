@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 from django.db import models
+from django.contrib.auth.models import Group
 from django.utils import timezone
 #from django.utils.translation import ugettext_lazy as _
 
@@ -35,6 +36,7 @@ class Report(models.Model):
     visibility = models.CharField(max_length=7, choices=P_CHOICES, default='private')
     folder = models.ForeignKey(Folder, null=True)
     encrypt = models.BooleanField(default=False)
+    group = models.ManyToManyField(Group, null=True)
     def __str__(self):
         return self.short
 
@@ -49,6 +51,13 @@ class Report(models.Model):
 #        return self.file.name
     #class Meta:
     #    ordering = ('user',)
+#class Permision(models.Model):
+#    name = models.CharField(max_length=50, default="null")
+#    content_type =
+
+#class Group(models.Model):
+ #    name = models.CharField(max_length=80, default="null")
+  #   permissions = models.ManyToManyField(Permission)
 
 class User(models.Model):
      first_name = models.CharField(max_length=200, default="null")
@@ -56,3 +65,4 @@ class User(models.Model):
      username = models.CharField(max_length=200, default="null")
      password = models.CharField(max_length=200, default="null")
      is_superuser = models.BooleanField(default="false")
+

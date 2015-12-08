@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from django import forms
-from django.contrib.auth.models import User
+from django.contrib.auth.models import User, Group, Permission
 from django.forms.widgets import RadioSelect
 
 #from multiupload.fields import MultiFileField
@@ -14,6 +14,11 @@ class UserForm(forms.ModelForm):
     class Meta:
         model = User
         fields = ['username','password', 'is_superuser']
+
+class GroupForm(forms.ModelForm):
+    class Meta:
+        model = Group
+        fields = ['name']
 
 class LoginForm(forms.Form):
     username = forms.CharField(label = "Username", max_length = 100)
