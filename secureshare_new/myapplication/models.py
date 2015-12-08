@@ -4,6 +4,7 @@ from django.utils import timezone
 #from django.utils.translation import ugettext_lazy as _
 
 class Folder(models.Model):
+    username = models.CharField(max_length=200, default='null')
     name = models.CharField(max_length=30)
     timestamp = models.DateTimeField(default=timezone.now)
 

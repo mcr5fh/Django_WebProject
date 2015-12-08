@@ -29,7 +29,7 @@ class LOUForm(forms.ModelForm):
 class ReportForm(forms.ModelForm):
      class Meta:
         model = Report
-        fields = ['short','detailed','file1','file2','file3','file4','file5','visibility']
+        fields = ['short','detailed','file1','file2','file3','file4','file5','visibility','encrypt']
         #widgets = {'visibility': RadioSelect(),}
 
 #    files = MultiFileField(min_num=0, max_num=3, max_file_size=1024*1024*5)

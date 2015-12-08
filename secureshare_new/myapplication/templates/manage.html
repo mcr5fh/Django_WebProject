@@ -1,180 +1,207 @@
-{% load staticfiles %}
 <!DOCTYPE html>
-<html lang="en">
-<head>
-    <link href={% block stylesheet_1 %}"{% static 'bootstrap/css/bootstrap.min.css' %}" {% endblock %} rel="stylesheet">
-    <link href={% block stylesheet_2 %} "{% static 'bootstrap/css/bootstrap.css' %}" {% endblock %} rel="stylesheet">
-    <link href={% block stylesheet_3 %}"{% static 'bootstrap/css/reports.css' %}"{% endblock %} rel="stylesheet">
-    <link href={% block stylesheet_4 %}"{% static 'bootstrap/css/folder.css' %}"{% endblock %} rel="stylesheet">
+{% extends "manage_BASE.html" %}
 
-    <script type="text/javascript">
-        var dragSrcEl = null;
-        function myFunction() {
-            var reports = document.querySelectorAll('#reports .report');
-            var folders = document.querySelectorAll('#folders .folder');
-            [].forEach.call(reports, function (report) {
-                report.addEventListener('dragstart', handleDragStart, false);
-                report.addEventListener('dragend', handleDragEnd, false);
-            });
-            [].forEach.call(folders, function (folder) {
+{% block content %}
+    <div class="container theme-showcase" role="main">
 
-                folder.addEventListener('dragenter', handleDragEnter, false);
-                folder.addEventListener('dragover', handleDragOver, false);
-                folder.addEventListener('dragleave', handleDragLeave, false);
-                folder.addEventListener('drop', handleDrop, false);
+        <!-- Main jumbotron for a primary marketing message or call to action -->
+        <div class="jumbotron">
+            <script type="text/javascript">
+                var dragSrcEl = null;
+                function myFunction() {
+                    var reports = document.querySelectorAll('#reports .report');
+                    var folders = document.querySelectorAll('#folders .folder');
+                    [].forEach.call(reports, function (report) {
+                        report.addEventListener('dragstart', handleDragStart, false);
+                        report.addEventListener('dragend', handleDragEnd, false);
+                    });
+                    [].forEach.call(folders, function (folder) {
+                        folder.addEventListener('dragenter', handleDragEnter, false);
+                        folder.addEventListener('dragover', handleDragOver, false);
+                        folder.addEventListener('dragleave', handleDragLeave, false);
+                        folder.addEventListener('drop', handleDrop, false);
 
-            });
-        }
-        function handleDragStart(e) {
-            this.style.opacity = '0.4';  // this / e.target is the source node.
-            dragSrcEl = this;
-            e.dataTransfer.effectAllowed = 'move';
-            e.dataTransfer.setData('text/html', this.innerHTML);
-        }
-        function handleDragOver(e) {
-            if (e.preventDefault) {
-                e.preventDefault(); // Necessary. Allows us to drop.
-            }
-            e.dataTransfer.dropEffect = 'move';  // See the section on the DataTransfer object.
-            return false;
-        }
-        function handleDragEnter(e) {
-            // this / e.target is the current hover target.
-            this.classList.add('over');
-        }
-        function handleDragLeave(e) {
-            this.classList.remove('over');  // this / e.target is previous target element.
-        }
-        function handleDrop(e) {
-            // this / e.target is current target element.
-            if (e.stopPropagation) {
-                e.stopPropagation(); // stops the browser from redirecting.
-            }
-            this.classList.remove('over');
-            reportPk = dragSrcEl.children[1].innerHTML;
-            //.innerHTML = this.innerHTML;
-            folderPk = this.children[1].innerHTML;
-            document.getElementById('reportpk').value = reportPk;
-            document.getElementById('folderpk').value = folderPk;
-            document.forms['move_report'].submit();
-            //this.innerHTML = e.dataTransfer.getData('text/html');
-            // See the section on the DataTransfer object.
-            return false;
-        }
-        function handleDragEnd(e) {
-            // this/e.target is the source node.
-            this.style.opacity = '1';
-        }
-    </script>
+                    });
+                }
+                function handleDragStart(e) {
+                    this.style.opacity = '0.4';  // this / e.target is the source node.
+                    dragSrcEl = this;
+                    e.dataTransfer.effectAllowed = 'move';
+                    e.dataTransfer.setData('text/html', this.innerHTML);
+                }
+                function handleDragOver(e) {
+                    if (e.preventDefault) {
+                        e.preventDefault(); // Necessary. Allows us to drop.
+                    }
+                    e.dataTransfer.dropEffect = 'move';  // See the section on the DataTransfer object.
+                    return false;
+                }
+                function handleDragEnter(e) {
+                    // this / e.target is the current hover target.
+                    this.classList.add('over');
+                }
+                function handleDragLeave(e) {
+                    this.classList.remove('over');  // this / e.target is previous target element.
+                }
+                function handleDrop(e) {
+                    // this / e.target is current target element.
+                    if (e.stopPropagation) {
+                        e.stopPropagation(); // stops the browser from redirecting.
+                    }
+                    this.classList.remove('over');
+                    reportPk = dragSrcEl.children[1].innerHTML;
+                    //.innerHTML = this.innerHTML;
+                    folderPk = this.children[1].innerHTML;
+                    document.getElementById('reportpk').value = reportPk;
+                    document.getElementById('folderpk').value = folderPk;
+                    document.forms['move_report'].submit();
+                    //this.innerHTML = e.dataTransfer.getData('text/html');
+                    // See the section on the DataTransfer object.
+                    return false;
+                }
+                function handleDragEnd(e) {
+                    // this/e.target is the source node.
+                    this.style.opacity = '1';
+                }
+            </script>
 
-    <meta charset="UTF-8">
-    <title></title>
-</head>
-<body onload="myFunction()">
-<h2>Create Report</h2>
-<a class="btn btn-default" href="{% url 'report' %}" role="button">Go to New Report Page</a>
+            <meta charset="UTF-8">
+            <title></title>
+            </head>
+            <body onload="myFunction()">
+            <h2>Create Report</h2>
+            <a class="btn btn-default" href="{% url 'report' %}" role="button">Go to New Report Page</a>
 
-<h2>Your Reports</h2>
-{% if reports %}
-    <div id="reports" style="overflow-x:auto; height: 300px;">
-        {% for report in reports %}
-            <div class="report" draggable="true">
-                <header>{{ report.short }}</header>
-                <div hidden> {{ report.pk }} </div>
-
-                {{ report.timestamp }} </br>
-                {{ report.visibility }} </br>
-
-                {% if report.file1 or report.file2 or report.file3 or report.file4 or report.file5 %}
-                    {% if report.file1 %}
-                        <a href="{{ report.file1.url }}">  {{ report.file1.name }}</a>
-                        <br/>
-                    {% endif %}
-                    {% if report.file2 %}
-                        <a href="{{ report.file2.url }}"> {{ report.file2.name }}</a>
-                        <br/>
-                    {% endif %}
-                    {% if report.file3 %}
-                        <a href="{{ report.file3.url }}"> {{ report.file3.name }}</a>
-                        <br/>
-                    {% endif %}
-                    {% if report.file4 %}
-                        <a href="{{ report.file4.url }}"> {{ report.file4.name }}</a>
-                        <br/>
-                    {% endif %}
-                    {% if report.file5 %}
-                        <a href="{{ report.file5.url }}"> {{ report.file5.name }}</a>
-                        <br/>
-                    {% endif %}
-                {% else %}
-                    No files
-                    <br/>
-                {% endif %}
-
-
-                <footer>
-                    <form action="{% url "delete" %}" method="post" enctype="multipart/form-data">
-                        {% csrf_token %}
-
-                        <a class="btn btn-default" href="{% url 'report_edit' pk=report.pk %}" role="button">Edit</a>
-                        <input type="hidden" name="report" value="{{ report.pk }}"/>
-
-                        <input type="submit" value="Delete"/>
-
-                    </form>
-                </footer>
-            </div>
-        {% endfor %}
-    </div>
-{% else %}
-    <h3> No Reports </h3>
-{% endif %}
-
-<h2>Create Folder </h2>
-
-<form action="{% url 'folder_new' %}" method="post" enctype="multipart/form-data">{% csrf_token %}
-    <h3> Folder Name: </h3> <input type="text" name='name'/>
-    <input type='submit' value='Submit'/>
-</form>
-{% load attachment_tags %}
-<h2>Your Folders</h2>
-{% if folders %}
-    <div id="folders">
-        {% for folder in folders %}
-            <div class="folder">
-                <header>{{ folder.name }}</header>
-                <div hidden> {{ folder.pk }}  </div>
-                {% get_reports folder as reports %}
-                {% if reports %}
+            <h2>Your Reports</h2>
+            {% if reports %}
+                <div id="reports" style="overflow:auto; height:300px;">
                     {% for report in reports %}
-                        <a href="{% url 'report_edit' pk=report.pk %}"> {{ report.short }}</a>
-                        <form action="{% url "remove_report" %}" method="post" enctype="multipart/form-data">
-                            {% csrf_token %}
-                            <input type="hidden" name="report" value="{{ report.pk }}"/>
-                            <input type="hidden" name="folder" value="{{ folder.pk }}"/>
-                            <input type="submit" value="x"/>
-                        </form>
-                        <br/>
+                        <div class="report" draggable="true">
+                            <header>{{ report.short }}</header>
+                            <div hidden> {{ report.pk }} </div>
+
+                            {{ report.timestamp }} </br>
+                            {{ report.visibility }} </br>
+
+                            {% if report.file1 or report.file2 or report.file3 or report.file4 or report.file5 %}
+                                {% if report.encrypt == False %}
+                                    {% if report.file1 %}
+                                        <a href="{{ report.file1.url }}">{{ report.file1.name }}</a>
+                                        <br/>
+                                    {% endif %}
+                                    {% if report.file2 %}
+                                        <a href="{{ report.file2.url }}">{{ report.file2.name }}</a>
+                                        <br/>
+                                    {% endif %}
+                                    {% if report.file3 %}
+                                        <a href="{{ report.file3.url }}">{{ report.file3.name }}</a>
+                                        <br/>
+                                    {% endif %}
+                                    {% if report.file4 %}
+                                        <a href="{{ report.file4.url }}">{{ report.file4.name }}</a>
+                                        <br/>
+                                    {% endif %}
+                                    {% if report.file5 %}
+                                        <a href="{{ report.file5.url }}">{{ report.file5.name }}</a>
+                                        <br/>
+                                    {% endif %}
+                                {% else %}
+                                    {% if report.file1 %}
+                                        {{ report.file1.name }}
+                                        <br/>
+                                    {% endif %}
+                                    {% if report.file2 %}
+                                        {{ report.file2.name }}
+                                        <br/>
+                                    {% endif %}
+                                    {% if report.file3 %}
+                                        {{ report.file3.name }}
+                                        <br/>
+                                    {% endif %}
+                                    {% if report.file4 %}
+                                        {{ report.file4.name }}
+                                        <br/>
+                                    {% endif %}
+                                    {% if report.file5 %}
+                                        {{ report.file5.name }}
+                                        <br/>
+                                    {% endif %}
+                                {% endif %}
+                            {% else %}
+                                No files
+                                <br/>
+                            {% endif %}
+
+
+                            <footer>
+                                <form action="{% url "delete" %}" method="post" enctype="multipart/form-data">
+                                    {% csrf_token %}
+
+                                    <a class="btn btn-default" href="{% url 'report_edit' pk=report.pk %}"
+                                       role="button">Edit</a>
+                                    <input type="hidden" name="report" value="{{ report.pk }}"/>
+
+                                    <input type="submit" value="Delete"/>
+
+                                </form>
+                            </footer>
+                        </div>
                     {% endfor %}
-                {% endif %}
+                </div>
+            {% else %}
+                <h3> No Reports </h3>
+            {% endif %}
 
-                <footer>
-                    <form action="{% url "folder_delete" %}" method="post" enctype="multipart/form-data">
-                        {% csrf_token %}
-                        <input type="hidden" name="folder" value="{{ folder.pk }}"/>
-                        <input type="submit" value="Delete Folder"/>
-                    </form>
-                </footer>
-            </div>
-        {% endfor %}
+            <h2>Create Folder </h2>
+
+            <form action="{% url 'folder_new' %}" method="post" enctype="multipart/form-data">{% csrf_token %}
+                <h3> Folder Name: </h3> <input type="text" name='name'/>
+                <input type='submit' value='Submit'/>
+            </form>
+            {% load attachment_tags %}
+            <h2>Your Folders</h2>
+            {% if folders %}
+                <div id="folders" style="overflow:auto; height:300px;">
+                    {% for folder in folders %}
+                        <div class="folder">
+                            <header>{{ folder.name }}</header>
+                            <div hidden> {{ folder.pk }}  </div>
+                            {% get_reports folder as reports %}
+                            {% if reports %}
+                                {% for report in reports %}
+                                    <a href="{% url 'report_edit' pk=report.pk %}"> {{ report.short }}</a>
+                                    <form action="{% url "remove_report" %}" method="post"
+                                          enctype="multipart/form-data">
+                                        {% csrf_token %}
+                                        <input type="hidden" name="report" value="{{ report.pk }}"/>
+                                        <input type="hidden" name="folder" value="{{ folder.pk }}"/>
+                                        <input type="submit" value="x"/>
+                                    </form>
+                                    <br/>
+                                {% endfor %}
+                            {% endif %}
+
+                            <footer>
+                                <form action="{% url "folder_delete" %}" method="post" enctype="multipart/form-data">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="folder" value="{{ folder.pk }}"/>
+                                    <input type="submit" value="Delete Folder"/>
+                                </form>
+                            </footer>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <h3> No Folders </h3>
+            {% endif %}
+            <form id='move_report' action="{% url 'move_report' %}" method="post"
+                  enctype="multipart/form-data">{% csrf_token %}
+                <input id="reportpk" type="hidden" name="reportpk"/>
+                <input id="folderpk" type="hidden" name="folderpk"/>
+            </form>
+        </div>
+
+
     </div>
-{% else %}
-    <h3> No Folders </h3>
-{% endif %}
-<form id='move_report' action="{% url 'move_report' %}" method="post" enctype="multipart/form-data">{% csrf_token %}
-    <input id="reportpk" type="hidden" name="reportpk"/>
-    <input id="folderpk" type="hidden" name="folderpk"/>
-</form>
-</body>
-</html>
 
+{% endblock %}
