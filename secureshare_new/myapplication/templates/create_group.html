@@ -4,10 +4,14 @@
 	{% block title %} Create A Group {%  endblock %}
 
 	{% block content %}
+    {% if created%}
+    <p>Group has been created. <a href='../index'> Return </a> to home page.</p>
+    {% else %}
 	<div class="container">
 	<form method = "post">{% csrf_token %}
 	{{new_group_form.as_p}}
 	<input type='submit' value='Are you sure?' />
         </form>
+    {% endif %}
 	
 	{% endblock %}

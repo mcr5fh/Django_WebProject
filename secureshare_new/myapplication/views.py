@@ -144,20 +144,23 @@ def edit_groups(request):
 
 @login_required
 def create_group(request):
+    created = False
     if request.method == 'POST':
         new_group_form = CreateGroupForm(data = request.POST)
         if new_group_form.is_valid():
             group_name = request.POST['group_form']
             newgroup = Group.objects.create(name=group_name)
+            created = True
     else:
         new_group_form = CreateGroupForm()
 
-    return render(request, 'create_group.html', {'new_group_form':new_group_form})
+    return render(request, 'create_group.html', {'new_group_form':new_group_form, 'created':created})
 
 
 
 @login_required
 def add_to_group(request):
+    added = False
     if request.method == 'POST':
         add_user_form = AddUserToGroupForm(data = request.POST)
         if add_user_form.is_valid:
@@ -167,9 +170,10 @@ def add_to_group(request):
             g = Group.objects.get(name=add_to)
             #g.user_set.add(user_name)
             user.groups.add(g)
+            added = True
     else:
         add_user_form = AddUserToGroupForm()
-    return render(request, 'add_to_group.html', {'add_user_form':add_user_form})
+    return render(request, 'add_to_group.html', {'add_user_form':add_user_form, 'added':added})
 
 
 

@@ -5,10 +5,14 @@
 
 
 	{% block content %}
+    {%if added%}
+    <p>User has been added to group. <a href='../index'> Return </a> to home page.</p>
+
+    {% else %}
 	<div class="container">
 	<form method = "post">{% csrf_token %}
 	{{add_user_form.as_p}}
 	<input type='submit' value='Are you sure?' />
         </form>
-	
+    {%endif%}
 	{% endblock %}
