@@ -335,6 +335,8 @@ def login_view(request):
     return render_to_response('login.html', {'login_form': login_form,'logged_in': logged_in}, context)
 
 from postman.api import pm_write, pm_broadcast
+from secureshare.settings import COUNTER
+
 
 def send_broadcast(request):
     if request.method == 'POST':
@@ -348,24 +350,17 @@ def send_broadcast(request):
             text = request.POST['body']
             encrypted = request.POST.get('encrypted', False)
             enc_key = request.POST['enc_key']
+            raw_b = b""
+
             if enc_key == "":
                 enc_key = "N/A"
             else:
                 #encrypt
-                hash_pw = SHA256.new(str.encode(enc_key))
-                sym_key = hash_pw.digest()
-                if len(sym_key) >= 16:
-                    if(len(sym_key) < 24 ):
-                        sym_key = sym_key[0:16]
-                    elif len(sym_key) < 32:
-                        sym_key = sym_key[0:24]
-                    elif len(sym_key) > 32:
-                        sym_key = sym_key[0:32]
-                encryption_suite = AES.new(sym_key, AES.MODE_CTR, b"", Counter.new(128))
-                text = encryption_suite.encrypt(text)
+                #encrypt
+                raw_b = encrypt(enc_key, text)
+                text=str(raw_b)
 
-
-            pm_broadcast(sender,"", subject, encrypted, body=text)
+            pm_broadcast(sender,"", subject, encrypted, raw=raw_b, body=text)
             return render(request, 'postman/inbox.html', )
         else:
             return render(request, 'broadcast.html', {'message_form': form })
@@ -375,6 +370,7 @@ def send_broadcast(request):
         form = BroadcastForm()
         return render(request, 'broadcast.html', {'message_form': form })
 
+from simplecrypt import encrypt, decrypt
 
 def send_message(request):
     if request.method == 'POST':
@@ -394,26 +390,19 @@ def send_message(request):
             text = request.POST['body']
             encrypted = request.POST.get('encrypted', False)
             enc_key = request.POST['enc_key']
+            raw_b = b""
             if enc_key == "":
                 enc_key = "N/A"
             else:
                 #encrypt
-                hash_pw = SHA256.new(str.encode(enc_key))
-                sym_key = hash_pw.digest()
-                if len(sym_key) >= 16:
-                    if(len(sym_key) < 24 ):
-                        sym_key = sym_key[0:16]
-                    elif len(sym_key) < 32:
-                        sym_key = sym_key[0:24]
-                    elif len(sym_key) > 32:
-                        sym_key = sym_key[0:32]
-                encryption_suite = AES.new(sym_key, AES.MODE_CTR, b"", Counter.new(128))
-                text = encryption_suite.encrypt(text)
+                raw_b = encrypt(enc_key, text)
+                text=str(raw_b)
 
 
-            pm_write(sender,recipient,subject, encrypted, body=text)
+            pm_write(sender,recipient,subject, encrypted, raw=raw_b, body=text)
             return render(request, 'postman/inbox.html', )
         else:
+            print("invalid form")
             return render(request, 'new_message.html', {'message_form': form })
 
 

@@ -67,8 +67,8 @@ class MessageForm(forms.Form):
     recipient = forms.CharField(label = "Recipient", max_length = 100)
     subject = forms.CharField(label = "Subject", max_length = 100)
     body = forms.CharField(label = "Message",widget=forms.Textarea)
-    encrypted = forms.BooleanField(label="Encrypt: ", required=False)
-    enc_key = forms.CharField(label = "Encryption Key: ", max_length = 100, required=False)
+    encrypted = forms.BooleanField(label="Encrypt ", required=False)
+    enc_key = forms.CharField(label = "Encryption Key ", max_length = 100, required=False)
 
     class Meta:
         model = Message

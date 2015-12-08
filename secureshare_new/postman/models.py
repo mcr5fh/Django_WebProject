@@ -267,7 +267,7 @@ class Message(models.Model):
     """
     #ADDED BY MATT:
     encrypted = models.BooleanField(_("enc"), default=False)
-
+    raw_bytes = models.BinaryField(_("raw"), null=True)
     SUBJECT_MAX_LENGTH = 120
 
     subject = models.CharField(_("subject"), max_length=SUBJECT_MAX_LENGTH)
