@@ -22,6 +22,9 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = 'u-f#-ttou&7144qqy3&lvu69&vd4!q@a^usq&jd$q#+&ytgh@v'
 
+
+from Crypto.Util import Counter
+COUNTER = Counter.new(128)
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 

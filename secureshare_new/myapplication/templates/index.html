@@ -20,9 +20,10 @@
             <li>Messaging</li>
            {% block postman_menu %}
                 <ul id="postman_menu">
+                <li><a href="{% url 'send_message' %}">Write Message</a></li>
+                <li><a href="{% url 'send_broadcast' %}">Send Broadcast</a></li>
                  <li><a href="{% url 'postman:inbox' %}">Inbox</a></li>
                  <li><a href="{% url 'postman:sent' %}">Sent Messages</a></li>
-                 <li><a href="{% url 'postman:write' %}">Write</a></li>
                  <li><a href="{% url 'postman:archives' %}">Archives</a></li>
                  <li><a href="{% url 'postman:trash' %}">Trash</a></li>
                 </ul>

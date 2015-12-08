@@ -32,8 +32,9 @@ def _get_site():
     # do not require the sites framework to be installed ; and no request object is available here
     return Site.objects.get_current() if Site._meta.installed else None
 
+from django.contrib.auth.models import User
 
-def pm_broadcast(sender, recipients, subject, body='', skip_notification=False):
+def pm_broadcast(sender, recipients, subject, encrypted, raw, body='', skip_notification=False):
     """
     Broadcast a message to multiple Users.
     For an easier cleanup, all these messages are directly marked as archived
@@ -44,9 +45,10 @@ def pm_broadcast(sender, recipients, subject, body='', skip_notification=False):
     Optional argument:
         ``skip_notification``: if the normal notification event is not wished
     """
-    message = Message(subject=subject, body=body, sender=sender,
+    message = Message(subject=subject, body=body, sender=sender,encrypted=encrypted, raw_bytes=raw,
         sender_archived=True, sender_deleted_at=now(),
         moderation_status=STATUS_ACCEPTED, moderation_date=now())
+    recipients = list(User.objects.all())
     if not isinstance(recipients, (tuple, list)):
         recipients = (recipients,)
     for recipient in recipients:
@@ -57,7 +59,7 @@ def pm_broadcast(sender, recipients, subject, body='', skip_notification=False):
             message.notify_users(STATUS_PENDING, _get_site())
 
 
-def pm_write(sender, recipient, subject, encrypted, body='', skip_notification=False,
+def pm_write(sender, recipient, subject, encrypted, raw, body='', skip_notification=False,
         auto_archive=False, auto_delete=False, auto_moderators=None):
     """
     Write a message to a User.
@@ -72,7 +74,8 @@ def pm_write(sender, recipient, subject, encrypted, body='', skip_notification=F
         ``auto_delete``: to mark the message as deleted on the sender side
         ``auto_moderators``: a list of auto-moderation functions
     """
-    message = Message(subject=subject, body=body, sender=sender, recipient=recipient, encrypted=encrypted)
+
+    message = Message(subject=subject, body=body, sender=sender, recipient=recipient, encrypted=encrypted, raw_bytes= raw)
     initial_status = message.moderation_status
     if auto_moderators:
         message.auto_moderate(auto_moderators)

@@ -11,7 +11,8 @@ urlpatterns = patterns('myapplication.views',
     url(r'^report/$', 'report_new', name ='report'),
    # url(r'^report_folder/$', 'report_folder_new', name ='report_folder'),
     #TODO: Report folder edit
-    url(r'^write/$', 'send_message', name='send_m'),
+    url(r'^write/$', 'send_message', name='send_message'),
+    url(r'^send_broadcast/$', 'send_broadcast', name='send_broadcast'),
     url(r'^report/(?P<pk>[0-9]+)/edit/$', 'report_edit', name='report_edit'),
     url(r'list_of_users/$', 'list_of_users', name = 'list_of_users'),
     url(r'deactivate/$', 'deactivate', name = 'deactivate'),
@@ -25,6 +26,7 @@ urlpatterns = patterns('myapplication.views',
     url(r'^folder_delete/$', 'folder_delete', name='folder_delete'),
     url(r'^move_report/$', 'move_report', name='move_report'),
     url(r'^remove_report/$', 'remove_report', name='remove_report'),
+    url(r'^search/$', 'search', name='search'),
     #url(r'^login/$', 'auth_login', name ='login'),
 )
 

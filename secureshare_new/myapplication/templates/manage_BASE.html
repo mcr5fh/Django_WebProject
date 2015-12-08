@@ -14,6 +14,11 @@
 
         <!-- Custom styles for this template -->
         <link href={% block stylesheet_4 %}"{% static 'bootstrap/css/theme.css' %}"{% endblock %}  rel="stylesheet">
+
+        <link href={% block stylesheet_5 %}"{% static 'bootstrap/css/reports.css' %}"{% endblock %}
+                  rel="stylesheet">
+            <link href={% block stylesheet_6 %}"{% static 'bootstrap/css/folder.css' %}"{% endblock %} rel="stylesheet">
+
 </head>
 <body>
 
@@ -33,7 +38,7 @@
           <ul class="nav navbar-nav">
             <li class="active"><a href="{% url 'index' %}">Home</a></li>
             <li><a href="{% url 'report' %}">New Report</a></li>
-            <li><a href="{% url 'postman:inbox' %}">Inbox</a></li>
+              <li><a href="{% url 'postman:inbox' %}">Inbox</a></li>
               <li><a href="{% url 'manage' %}">Manage Reports</a></li>
               <li><a href="{% url 'list' %}">List Reports</a></li>
 
