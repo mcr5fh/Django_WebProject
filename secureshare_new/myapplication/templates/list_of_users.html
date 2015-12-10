@@ -1,0 +1,10 @@
+<!DOCTYPE html>
+{% extends "my_BASE.html" %}
+
+  {% block content %}
+    <div class="container">
+        {% csrf_token %}
+      <p>{{ user.username }} is not a Site-Manager. Access denied. <a href='../index'> Return </a> to home page.</p>
+        </div>
+
+    {% endblock %}

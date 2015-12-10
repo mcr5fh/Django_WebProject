@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+{% extends "group_BASE.html" %}
+
+{% block content %}
+    <div class="container theme-showcase" role="main">
+
+        <!-- Main jumbotron for a primary marketing message or call to action -->
+        <div class="jumbotron">
+            <script type="text/javascript">
+                var dragSrcEl = null;
+                function myFunction() {
+                    var users = document.querySelectorAll('#users .user');
+                    var groups = document.querySelectorAll('#groups .group');
+                    [].forEach.call(users, function (user) {
+                        user.addEventListener('dragstart', handleDragStart, false);
+                        user.addEventListener('dragend', handleDragEnd, false);
+                    });
+                    [].forEach.call(groups, function (group) {
+                        group.addEventListener('dragenter', handleDragEnter, false);
+                        group.addEventListener('dragover', handleDragOver, false);
+                        group.addEventListener('dragleave', handleDragLeave, false);
+                        group.addEventListener('drop', handleDrop, false);
+
+                    });
+                }
+                function handleDragStart(e) {
+                    this.style.opacity = '0.4';  // this / e.target is the source node.
+                    dragSrcEl = this;
+                    e.dataTransfer.effectAllowed = 'move';
+                    e.dataTransfer.setData('text/html', this.innerHTML);
+                }
+                function handleDragOver(e) {
+                    if (e.preventDefault) {
+                        e.preventDefault(); // Necessary. Allows us to drop.
+                    }
+                    e.dataTransfer.dropEffect = 'move';  // See the section on the DataTransfer object.
+                    return false;
+                }
+                function handleDragEnter(e) {
+                    // this / e.target is the current hover target.
+                    this.classList.add('over');
+                }
+                function handleDragLeave(e) {
+                    this.classList.remove('over');  // this / e.target is previous target element.
+                }
+                function handleDrop(e) {
+                    // this / e.target is current target element.
+                    if (e.stopPropagation) {
+                        e.stopPropagation(); // stops the browser from redirecting.
+                    }
+                    this.classList.remove('over');
+                    userPk = dragSrcEl.children[1].innerHTML;
+                    //.innerHTML = this.innerHTML;
+                    groupPk = this.children[1].innerHTML;
+                    document.getElementById('userpk').value = userPk;
+                    document.getElementById('grouppk').value = groupPk;
+                    document.forms['move_user'].submit();
+                    //this.innerHTML = e.dataTransfer.getData('text/html');
+                    // See the section on the DataTransfer object.
+                    return false;
+                }
+                function handleDragEnd(e) {
+                    // this/e.target is the source node.
+                    this.style.opacity = '1';
+                }
+            </script>
+
+            <meta charset="UTF-8">
+            <title></title>
+            </head>
+            <body onload="myFunction()">
+
+            <h2>List of Users</h2>
+            {% if users %}
+                <div id="users" style="overflow:auto; height:100px;">
+                    {% for user in users %}
+                        <div class="user" draggable="true">
+                            <header>{{ user.username }}</header>
+                            <div hidden> {{ user.pk }} </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <h3> No Users </h3>
+            {% endif %}
+
+            <h2>Create Group </h2>
+
+            <form action="{% url 'group_new' %}" method="post" enctype="multipart/form-data">{% csrf_token %}
+                <h3> Group Name: </h3> <input type="text" name='name'/>
+                <input type='submit' value='Submit' onclick="checkGroup()">
+            </form>
+            {% load user_tags %}
+            <h2>Your Groups</h2>
+            {% if groups %}
+                <div id="groups" style="overflow:auto; height:300px;">
+                    {% for group in groups %}
+                        <div class="group">
+                            <header>{{ group.name }}</header>
+                            <div hidden> {{ group.pk }}  </div>
+                            {% get_users group as users %}
+                            {% if users %}
+                                {% for user in users %}
+                                    {{ user.username }}
+                                    <form action="{% url "remove_user" %}" method="post"
+                                          enctype="multipart/form-data">
+                                        {% csrf_token %}
+                                        <input type="hidden" name="user" value="{{ user.pk }}"/>
+                                        <input type="hidden" name="group" value="{{ group.pk }}"/>
+                                        <input type="submit" value="x"/>
+                                    </form>
+                                    <br/>
+                                {% endfor %}
+                            {% endif %}
+
+                            <footer>
+                                <form action="{% url "group_delete" %}" method="post" enctype="multipart/form-data">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="group" value="{{ group.pk }}"/>
+                                    <input type="submit" value="Delete Group"/>
+                                </form>
+                            </footer>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <h3> No Groups </h3>
+            {% endif %}
+            <form id='move_user' action="{% url 'move_user' %}" method="post"
+                  enctype="multipart/form-data">{% csrf_token %}
+                <input id="userpk" type="hidden" name="userpk"/>
+                <input id="grouppk" type="hidden" name="grouppk"/>
+            </form>
+        </div>
+
+
+    </div>
+
+{% endblock %}

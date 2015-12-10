@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+{% extends "my_BASE.html" %}
+
+
+{% block title %} Report List {% endblock %}
+
+{% block content %}
+    <div class="container theme-showcase" role="main">
+
+        <!-- Main jumbotron for a primary marketing message or call to action -->
+        <div class="jumbotron">
+            <p>{{ user.username }}'s Reports</p>
+            <!-- List of uploaded documents border="1" style="width:100%"  -->
+
+            {% if bad_date == True %}
+                You did not fill out the dates so the upload date filter was ignored
+                </br>
+            {% endif %}
+            You searched for "{{ query_string }}" and the results are listed below.
+
+
+            {% if found_entries %}
+                <table class="table table-striped">
+                    <!--<ul> -->
+                    <tr>
+                        <td><b>Uploaded by</b></td>
+                        <td><b>Date Uploaded</b></td>
+                        <td><b>Report Title</b></td>
+                        <td><b>Report Description</b></td>
+                        <td><b>Report Files</b></td>
+                        <td><b>Visibility</b></td>
+
+                    </tr>
+                    {% for report in found_entries %}
+                        <tr>
+                            <td>{{ report.username }}</td>
+                            <td>{{ report.timestamp }}</td>
+                            <td>{{ report.short }}</td>
+                            <td>{{ report.detailed|truncatechars:30 }}</td>
+                            <td>
+                                <!-- get_attachments report as attachments %} -->
+                                {% if report.file1 or report.file2 or report.file3 or report.file4 or report.file5 %}
+                                    {% if report.encrypt == False %}
+                                        {% if report.file1 %}
+                                            <a href="{{ report.file1.url }}">{{ report.file1.name }}</a>
+                                            <br/>
+                                        {% endif %}
+                                        {% if report.file2 %}
+                                            <a href="{{ report.file2.url }}">{{ report.file2.name }}</a>
+                                            <br/>
+                                        {% endif %}
+                                        {% if report.file3 %}
+                                            <a href="{{ report.file3.url }}">{{ report.file3.name }}</a>
+                                            <br/>
+                                        {% endif %}
+                                        {% if report.file4 %}
+                                            <a href="{{ report.file4.url }}">{{ report.file4.name }}</a>
+                                            <br/>
+                                        {% endif %}
+                                        {% if report.file5 %}
+                                            <a href="{{ report.file5.url }}">{{ report.file5.name }}</a>
+                                            <br/>
+                                        {% endif %}
+                                    {% else %}
+                                        {% if report.file1 %}
+                                            {{ report.file1.name }}
+                                            <br/>
+                                        {% endif %}
+                                        {% if report.file2 %}
+                                            {{ report.file2.name }}
+                                            <br/>
+                                        {% endif %}
+                                        {% if report.file3 %}
+                                            {{ report.file3.name }}
+                                            <br/>
+                                        {% endif %}
+                                        {% if report.file4 %}
+                                            {{ report.file4.name }}
+                                            <br/>
+                                        {% endif %}
+                                        {% if report.file5 %}
+                                            {{ report.file5.name }}
+                                            <br/>
+                                        {% endif %}
+                                    {% endif %}
+                                {% else %}
+                                    No files
+                                {% endif %}
+
+                            </td>
+                            <td>{{ report.visibility }}</td>
+
+
+                        </tr>
+                    {% endfor %}
+                </table>
+
+                <form action="{% url "login" %}" method="post" enctype="multipart/form-data">{% csrf_token %}
+                    <input type="hidden" name='logout' value="False"/>
+                    <input type='submit' value='Logout'/>
+
+                </form>
+
+            {% else %}
+                <p>No Reports.</p>
+                </br>
+
+                <form action="{% url "login" %}" method="post" enctype="multipart/form-data">{% csrf_token %}
+                    <input type="hidden" name='logout' value="False"/>
+                    <input type='submit' value='Logout'/>
+
+                </form>
+            {% endif %}
+        </div>
+
+
+    </div>
+
+{% endblock %}

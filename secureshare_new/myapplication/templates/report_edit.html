@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+{% extends "my_BASE.html" %}
+
+		{% block title %} SecureShare Home {%  endblock %}
+
+
+		<!-- Upload form. Note enctype attribute! -->
+		{% block content %}
+            <h1>Edit Report</h1>
+            <form action="{% url "report_edit" pk=report.pk %}" method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+                {{ form.as_p }}
+                <p><input type="submit" value="Update" /></p>
+            </form>
+        {% endblock %}

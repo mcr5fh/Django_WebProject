@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+{% extends "my_BASE.html" %}
+
+		{% block title %} Register User {%  endblock %}
+
+
+  {% block content %}
+
+    {% if registered %}
+      <p>Thank you for registering 
+        Please log in <a href='../login'>here</a>. </p>
+    {% else %}
+    <form method="post"> {% csrf_token %}
+
+       <!-- {{ user_form.as_p }} --> 
+      <label for="first_name">First Name: </label>
+      <input id="first_name" type="text" name="first_name">
+
+      <label for="last_name">Last Name: </label>
+      <input id="last_name" type="text" name="last_name">
+
+      </br>
+      </br> 
+
+      <label for="username">Username: </label>
+      <input id="username" type="text" name="username">
+
+      <label for="password">Password: </label>
+      <input id="password" type="password" name="password">
+
+        <!-- so that is_super user is sent to the post as false for a normal user -->
+      </br> 
+      </br> 
+
+      <label for="is_superuser" >Site-Manager: </label>
+      <input  id="is_superuser" type="checkbox" name="is_superuser">
+
+      </br> 
+      </br>
+      <input type="submit" value="OK">
+
+     
+
+    </form>
+    {% endif %}
+  {% endblock %}

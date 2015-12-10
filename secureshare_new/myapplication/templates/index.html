@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+{% extends "my_BASE.html" %}
+
+		{% block title %} SecureShare Home {%  endblock %}
+
+
+  {% block content %}
+    <div class="container">
+        {% csrf_token %}
+      <p>{{ user.username }} is logged in.</p>
+        </br>
+        <ul>
+            <li>
+                <a href = "{% url 'list' %}">List of Reports</a>
+            </li>
+            <li>
+                <a href = "{% url 'report' %}">Create a New Report</a>
+
+            </li>
+            <li>Messaging</li>
+           {% block postman_menu %}
+                <ul id="postman_menu">
+                <li><a href="{% url 'send_message' %}">Write Message</a></li>
+                <li><a href="{% url 'send_broadcast' %}">Send Broadcast</a></li>
+                 <li><a href="{% url 'postman:inbox' %}">Inbox</a></li>
+                 <li><a href="{% url 'postman:sent' %}">Sent Messages</a></li>
+                 <li><a href="{% url 'postman:archives' %}">Archives</a></li>
+                 <li><a href="{% url 'postman:trash' %}">Trash</a></li>
+                </ul>
+            {% endblock %}
+            <li><a href="{% url 'list_of_users' %}">Activate An Account (site admin only)</a>
+            <li><a href="{% url 'deactivate' %}">Deactivate An Account (site admin only)</a>
+            <li><a href="{% url 'make_super_user' %}">Make An Account Superuser (site admin only)</a>
+            <li><a href="{% url 'disable_super_user' %}">Disable Superuser (site admin only)</a>
+            <li><a href="{% url 'edit_groups' %}">Edit Groups (site admin only)</a>
+        </ul>
+        </br>
+       
+
+        </div>
+
+        <form action="{% url "login" %}" method="post" enctype="multipart/form-data">{% csrf_token %}
+			<input type="hidden" name='logout' value="False" />
+			<input type='submit' value='Logout' />
+        </form>
+
+    {% endblock %}

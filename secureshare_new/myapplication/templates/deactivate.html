@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+{% extends "my_BASE.html" %}
+
+            {% block title %} Deactivate {%  endblock %}
+
+  {% block content %}
+    {% if deactivated %}
+    <p>The account has been deactivated. This <a href='../index'> link </a> will take you back to the home page, or go <a href='../login'> here</a> for the login page.</p>
+
+    {% else %}
+    <div class="container">
+        <form method="post">{% csrf_token %}
+        {{deactivate_form.as_p}}
+        <input type='submit' value='Are you sure?' />
+        </form>
+        
+        
+        
+        {%endif%}
+    {% endblock %}
