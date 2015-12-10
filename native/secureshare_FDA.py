@@ -7,8 +7,8 @@ from simplecrypt import encrypt, decrypt
 
 def download_files():
     #url = input('Enter a URL: ')
-    #DEPLOY_URL = 'https://shrouded-garden-8170.herokuapp.com'
-    DEPLOY_URL = 'http://0.0.0.0:5000'
+    DEPLOY_URL = 'https://shrouded-garden-8170.herokuapp.com'
+    #DEPLOY_URL = 'http://0.0.0.0:5000'
 
     USER = input('username: ')
     PASS = getpass.getpass('password: ')

@@ -88,12 +88,11 @@ WSGI_APPLICATION = 'secureshare.wsgi.application'
 # NOTE: comment out one of the DATABASES options, depending on what you're doing (local server vs. deployment)
 
 # HEROKU DEPLOYMENT with postgres
-'''
 DATABASES = {
     'default': dj_database_url.config()
 }
-'''
 
+'''
 # DEVELOPMENT with sqlite3
 DATABASES = {
     'default': {
@@ -101,6 +100,7 @@ DATABASES = {
         'NAME': 'DB_dev_sqlite',
     }
 }
+'''
 
 
 # Internationalization
